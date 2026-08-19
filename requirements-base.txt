@@ -1,0 +1,21 @@
+# Shared runtime dependencies (torch installed separately per image)
+
+numpy>=1.24.0
+
+# Config and I/O
+PyYAML>=6.0
+jsonlines>=4.0.0
+
+# Tokenization and data
+tokenizers>=0.15.0
+datasets>=2.16.0
+huggingface-hub>=0.20.0
+
+# Plotting and dashboard
+matplotlib>=3.7.0
+streamlit>=1.29.0
+pandas>=2.0.0
+
+# Utilities
+tqdm>=4.66.0
+rich>=13.0.0

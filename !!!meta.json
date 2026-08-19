@@ -1,0 +1,124 @@
+{
+	"formatVersion": 2,
+	"appVersion": "0.104.1",
+	"files": [
+		{
+			"isClone": false,
+			"noteId": "DLygeoCkPMXV",
+			"notePath": [
+				"DLygeoCkPMXV"
+			],
+			"title": "Transformer Surgery Lab : Main",
+			"notePosition": 20,
+			"prefix": null,
+			"isExpanded": true,
+			"type": "text",
+			"mime": "text/html",
+			"attributes": [
+				{
+					"type": "label",
+					"name": "color",
+					"value": "#4d4de6",
+					"isInheritable": false,
+					"position": 10
+				}
+			],
+			"format": "markdown",
+			"dataFileName": "Transformer Surgery Lab  Main.md",
+			"attachments": [],
+			"dirFileName": "Transformer Surgery Lab  Main",
+			"children": [
+				{
+					"isClone": false,
+					"noteId": "jdhi52HnkGwL",
+					"notePath": [
+						"DLygeoCkPMXV",
+						"jdhi52HnkGwL"
+					],
+					"title": "Foundation and Data Implementation Plan",
+					"notePosition": 10,
+					"prefix": null,
+					"isExpanded": false,
+					"type": "text",
+					"mime": "text/html",
+					"attributes": [],
+					"format": "markdown",
+					"dataFileName": "Foundation and Data Implementation Plan.md",
+					"attachments": []
+				},
+				{
+					"isClone": false,
+					"noteId": "9Ihp6ML8v5MV",
+					"notePath": [
+						"DLygeoCkPMXV",
+						"9Ihp6ML8v5MV"
+					],
+					"title": "Model and Training Implementation Plan",
+					"notePosition": 20,
+					"prefix": null,
+					"isExpanded": false,
+					"type": "text",
+					"mime": "text/html",
+					"attributes": [],
+					"format": "markdown",
+					"dataFileName": "Model and Training Implementation Plan.md",
+					"attachments": []
+				},
+				{
+					"isClone": false,
+					"noteId": "FD1gi7ZqXwcA",
+					"notePath": [
+						"DLygeoCkPMXV",
+						"FD1gi7ZqXwcA"
+					],
+					"title": "Swaps, Evaluation, and Dashboard Implementation Plan",
+					"notePosition": 30,
+					"prefix": null,
+					"isExpanded": false,
+					"type": "text",
+					"mime": "text/html",
+					"attributes": [],
+					"format": "markdown",
+					"dataFileName": "Swaps, Evaluation, and Dashboard Implementation Plan.md",
+					"attachments": []
+				},
+				{
+					"isClone": false,
+					"noteId": "iW3btGXkeOXS",
+					"notePath": [
+						"DLygeoCkPMXV",
+						"iW3btGXkeOXS"
+					],
+					"title": "Tests, Documentation, and Publication Plan",
+					"notePosition": 40,
+					"prefix": null,
+					"isExpanded": false,
+					"type": "text",
+					"mime": "text/html",
+					"attributes": [],
+					"format": "markdown",
+					"dataFileName": "Tests, Documentation, and Publication Plan.md",
+					"attachments": []
+				},
+				{
+					"isClone": false,
+					"noteId": "WClCz4s6cMia",
+					"notePath": [
+						"DLygeoCkPMXV",
+						"WClCz4s6cMia"
+					],
+					"title": "New_Test",
+					"notePosition": 50,
+					"prefix": null,
+					"isExpanded": false,
+					"type": "text",
+					"mime": "text/html",
+					"attributes": [],
+					"format": "markdown",
+					"dataFileName": "New_Test.md",
+					"attachments": []
+				}
+			]
+		}
+	]
+}

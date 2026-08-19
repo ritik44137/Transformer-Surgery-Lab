@@ -1,0 +1,59 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (not needed in image)
+docs/
+references/
+*.md
+!README.md
+
+# Experiment outputs
+runs/
+checkpoints/
+outputs/
+experiments/comparisons/*.json
+experiments/comparisons/*.csv
+
+# Local datasets
+data/raw/
+data/processed/
+data/tokenizer/
+
+# Python caches and build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Test artifacts
+htmlcov/
+.coverage
+.tox/
+
+# Editor and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Generated assets
+assets/
+*.png
+*.jpg
+
+# Local env
+.env
+.env.*
+
+# Meta / tooling
+!!!meta.json
+.cursor/

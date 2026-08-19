@@ -1,0 +1,4 @@
+-r requirements-base.txt
+
+# GPU/default PyTorch pin; CPU image installs torch separately
+torch>=2.1.0

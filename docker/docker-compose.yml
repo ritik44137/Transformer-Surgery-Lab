@@ -1,0 +1,55 @@
+# Transformer Surgery Lab — Docker Compose services
+# Usage (from repo root):
+#   docker compose -f docker/docker-compose.yml build dev
+#   docker compose -f docker/docker-compose.yml run --rm dev bash
+#   docker compose -f docker/docker-compose.yml up dashboard
+
+services:
+  dev:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: tsl-dev:latest
+    working_dir: /workspace
+    volumes:
+      - ..:/workspace
+    environment:
+      - PYTHONPATH=/workspace/src
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  dev-cpu:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.cpu
+    image: tsl-dev-cpu:latest
+    working_dir: /workspace
+    volumes:
+      - ..:/workspace
+    environment:
+      - PYTHONPATH=/workspace/src
+    stdin_open: true
+    tty: true
+
+  train:
+    extends:
+      service: dev
+    command: python scripts/train.py --config configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml
+    profiles:
+      - train
+
+  dashboard:
+    extends:
+      service: dev-cpu
+    command: streamlit run dashboard/app.py --server.port=8501 --server.address=0.0.0.0
+    ports:
+      - "8501:8501"
+    profiles:
+      - dashboard

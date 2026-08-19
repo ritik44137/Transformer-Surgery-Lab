@@ -1,0 +1,100 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-wheel-metadata/
+*.manifest
+*.spec
+
+# --- Virtual environments ---
+.venv/
+venv/
+ENV/
+env/
+
+# --- Experiment outputs ---
+runs/
+checkpoints/
+outputs/
+experiments/**/runs/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# --- Data artifacts (keep README and structure) ---
+data/raw/**
+!data/raw/.gitkeep
+data/processed/**
+!data/processed/.gitkeep
+data/tokenizer/**
+!data/tokenizer/.gitkeep
+*.arrow
+*.parquet
+
+# --- Tokenizer / HF cache ---
+.cache/
+tokenizers/
+*.model
+*.vocab
+
+# --- Test and lint caches ---
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# --- Notebooks ---
+.ipynb_checkpoints/
+*.ipynb
+
+# --- Streamlit ---
+.streamlit/secrets.toml
+
+# --- Dashboard / assets (generated) ---
+assets/dashboard_screenshot.png
+
+# --- Editor and OS ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# --- Local env files ---
+.env
+.env.*
+!.env.example
+
+# --- Docker (local overrides) ---
+docker-compose.override.yml
+
+# --- Logs ---
+*.log
+logs/
