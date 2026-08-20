@@ -39,7 +39,7 @@ make dashboard    # launch Streamlit (once implemented)
 ## Roadmap
 
 - [x] Project scaffold and Docker environment
-- [ ] Config system, data pipeline, and TinyStories preparation
+- [X] Config system, data pipeline, and TinyStories preparation
 - [ ] Baseline decoder-only transformer (LayerNorm / sinusoidal / ReLU / MHA)
 - [ ] Training loop, checkpoints, and artifact tracking
 - [ ] Architectural swaps and experiment matrix
