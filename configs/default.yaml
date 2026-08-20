@@ -8,11 +8,16 @@ run:
 
 data:
   dataset: tinystories
-  raw_dir: data/raw
-  processed_dir: data/processed
-  tokenizer_dir: data/tokenizer
+  raw_dir: data/raw/tinystories
+  processed_dir: data/processed/tinystories
+  tokenizer_dir: data/tokenizer/tinystories
   seq_len: 256
   train_split: 0.95
+  vocab_size: 8000
+  max_texts: null
+  num_workers: 0
+  pin_memory: false
+  seed: 42
 
 model:
   vocab_size: 32000

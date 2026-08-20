@@ -1,0 +1,19 @@
+# TinyStories data config for Transformer Surgery Lab
+# Merge with configs/default.yaml via scripts/prepare_data.py
+
+data:
+  dataset: tinystories
+  hf_dataset: roneneldan/TinyStories
+  hf_split: train
+  text_column: text
+  raw_dir: data/raw/tinystories
+  processed_dir: data/processed/tinystories
+  tokenizer_dir: data/tokenizer/tinystories
+  seq_len: 256
+  train_split: 0.95
+  vocab_size: 8000
+  # Set max_texts for faster iteration; null = use full split
+  max_texts: 50000
+  num_workers: 0
+  pin_memory: false
+  seed: 42

@@ -14,14 +14,16 @@ data/
 ## Workflow
 
 1. Place or download raw data under `data/raw/` (or use HuggingFace `datasets` download in `scripts/prepare_data.py`).
-2. Run `make prepare-data` to tokenize, split, and write processed artifacts.
+2. Run data preparation:
+   - Main experiments: `python scripts/prepare_data.py --config configs/default.yaml configs/data/tinystories.yaml`
+   - Local smoke path (no HF download): `python scripts/prepare_data.py --config configs/default.yaml configs/data/smoke.yaml`
 3. Training scripts read from `data/processed/` and `data/tokenizer/` via config paths.
 
 ## Experiment policy
 
 - **One fixed tokenizer** across all architecture comparisons.
 - **One fixed dataset family** (TinyStories) for main comparison runs.
-- A separate tiny smoke-test corpus may live under `data/raw/smoke/` for pipeline validation.
+- A separate tiny smoke-test corpus lives under `data/raw/smoke/` for pipeline validation.
 
 ## Git ignore rules
 

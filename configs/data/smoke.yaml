@@ -1,0 +1,13 @@
+# Tiny local smoke corpus — no HuggingFace download required
+data:
+  dataset: smoke
+  raw_dir: data/raw/smoke
+  processed_dir: data/processed/smoke
+  tokenizer_dir: data/tokenizer/smoke
+  seq_len: 64
+  train_split: 0.9
+  vocab_size: 500
+  max_texts: null
+  num_workers: 0
+  pin_memory: false
+  seed: 42

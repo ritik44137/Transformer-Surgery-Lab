@@ -16,7 +16,8 @@ help:
 	@echo "  test          Run pytest in CPU container"
 	@echo "  lint          Run ruff check"
 	@echo "  format        Run black + ruff format"
-	@echo "  prepare-data  Prepare dataset from config"
+	@echo "  prepare-data  Prepare TinyStories dataset"
+	@echo "  prepare-data-smoke  Prepare local smoke corpus"
 	@echo "  smoke         Run smoke test pipeline"
 	@echo "  train         Launch baseline training"
 	@echo "  benchmark     Run benchmark script on a checkpoint"
@@ -46,7 +47,10 @@ format:
 	$(COMPOSE) run --rm dev-cpu ruff check --fix src tests scripts dashboard
 
 prepare-data:
-	$(COMPOSE) run --rm dev-cpu python scripts/prepare_data.py --config configs/data/tinystories.yaml
+	$(COMPOSE) run --rm dev-cpu python scripts/prepare_data.py --config configs/default.yaml configs/data/tinystories.yaml
+
+prepare-data-smoke:
+	$(COMPOSE) run --rm dev-cpu python scripts/prepare_data.py --config configs/default.yaml configs/data/smoke.yaml
 
 smoke:
 	$(COMPOSE) run --rm dev-cpu python scripts/smoke_test.py --config configs/train/smoke.yaml

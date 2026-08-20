@@ -40,9 +40,11 @@ experiments/**/runs/
 *.ckpt
 *.safetensors
 
-# --- Data artifacts (keep README and structure) ---
+# --- Data artifacts (keep README, structure, and smoke corpus) ---
 data/raw/**
 !data/raw/.gitkeep
+!data/raw/smoke/
+!data/raw/smoke/**
 data/processed/**
 !data/processed/.gitkeep
 data/tokenizer/**
