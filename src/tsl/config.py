@@ -83,21 +83,59 @@ def load_config(
 ) -> dict[str, Any]:
     """Load and deep-merge one or more YAML configs.
 
-    Earlier files are the base; later files override. Example::
+    Earlier files are the base; later files override. Each file may declare
+    an ``includes`` list of paths that are merged first (depth-first)::
 
-        cfg = load_config("configs/default.yaml", "configs/data/tinystories.yaml")
+        cfg = load_config("configs/experiments/baseline_....yaml")
     """
     if not paths:
         raise ConfigError("load_config requires at least one config path")
 
     merged: dict[str, Any] = {}
     for path in paths:
-        override = load_yaml(path)
-        _deep_merge(merged, override)
+        _merge_file(merged, Path(path), seen=set())
+
+    # includes is a load-time directive, not part of the runtime config.
+    merged.pop("includes", None)
 
     if validate:
         validate_config(merged, sections=required_sections)
     return merged
+
+
+def _merge_file(
+    merged: MutableMapping[str, Any],
+    path: Path,
+    *,
+    seen: set[Path],
+) -> None:
+    """Merge *path* (and its includes) into *merged*."""
+    path = path.resolve()
+    if path in seen:
+        raise ConfigError(f"Circular config include detected: {path}")
+    seen.add(path)
+
+    data = load_yaml(path)
+    includes = data.pop("includes", None) or []
+    if not isinstance(includes, list):
+        raise ConfigError(f"'includes' must be a list in {path}")
+
+    base_dir = path.parent
+    for inc in includes:
+        inc_path = Path(inc)
+        if not inc_path.is_absolute():
+            # Resolve relative to repo-style paths from CWD first, then file dir.
+            cwd_candidate = Path.cwd() / inc_path
+            file_candidate = base_dir / inc_path
+            if cwd_candidate.is_file():
+                inc_path = cwd_candidate
+            elif file_candidate.is_file():
+                inc_path = file_candidate
+            else:
+                inc_path = cwd_candidate
+        _merge_file(merged, inc_path, seen=seen)
+
+    _deep_merge(merged, data)
 
 
 def resolve_config(

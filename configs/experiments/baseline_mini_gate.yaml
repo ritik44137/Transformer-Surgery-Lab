@@ -1,0 +1,10 @@
+# Mini end-to-end run for Phase 4 gate (smoke data + tiny model + few steps)
+includes:
+  - configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml
+  - configs/model/mini.yaml
+  - configs/train/mini.yaml
+
+run:
+  name: baseline_mini_gate
+  seed: 42
+  output_dir: runs

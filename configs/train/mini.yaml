@@ -1,0 +1,14 @@
+# Ultra-short training settings for Phase 4 gate / local smoke
+
+train:
+  max_steps: 20
+  batch_size: 8
+  eval_interval: 10
+  log_interval: 5
+  learning_rate: 3.0e-4
+  weight_decay: 0.1
+  warmup_steps: 2
+  grad_clip: 1.0
+  scheduler: cosine
+  min_lr_ratio: 0.1
+  eval_max_batches: 4

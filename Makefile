@@ -5,7 +5,7 @@ COMPOSE := docker compose -f docker/docker-compose.yml
 IMAGE_DEV := tsl-dev:latest
 IMAGE_CPU := tsl-dev-cpu:latest
 
-.PHONY: help build build-cpu shell shell-cpu test lint format prepare-data smoke train benchmark dashboard clean
+.PHONY: help build build-cpu shell shell-cpu test lint format prepare-data prepare-data-smoke smoke train train-mini benchmark dashboard clean
 
 help:
 	@echo "Transformer Surgery Lab — available targets:"
@@ -20,6 +20,7 @@ help:
 	@echo "  prepare-data-smoke  Prepare local smoke corpus"
 	@echo "  smoke         Run smoke test pipeline"
 	@echo "  train         Launch baseline training"
+	@echo "  train-mini    Launch mini CPU gate training"
 	@echo "  benchmark     Run benchmark script on a checkpoint"
 	@echo "  dashboard     Launch Streamlit dashboard"
 	@echo "  clean         Remove local Python caches"
@@ -57,6 +58,9 @@ smoke:
 
 train:
 	$(COMPOSE) run --rm dev python scripts/train.py --config configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml
+
+train-mini:
+	$(COMPOSE) run --rm dev-cpu python scripts/train.py --config configs/experiments/baseline_mini_gate.yaml --device cpu
 
 benchmark:
 	$(COMPOSE) run --rm dev-cpu python scripts/benchmark.py --help

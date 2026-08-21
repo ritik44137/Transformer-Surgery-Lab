@@ -1,0 +1,24 @@
+# Classical baseline experiment: LayerNorm + sinusoidal + ReLU + MHA
+# Launch: python scripts/train.py --config configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml
+
+includes:
+  - configs/default.yaml
+  - configs/data/smoke.yaml
+  - configs/model/base_small.yaml
+  - configs/train/baseline_train.yaml
+
+run:
+  name: baseline_layernorm_sinusoidal_relu_mha
+  seed: 42
+  output_dir: runs
+
+model:
+  # Keep classical stack explicit even when defaults already match.
+  norm: layernorm
+  positional: sinusoidal
+  feedforward: relu
+  attention: mha
+
+# NOTE: This scaffold uses the local smoke corpus so the baseline path is
+# immediately runnable. Swap data include to configs/data/tinystories.yaml
+# after `make prepare-data` for the official comparison runs.
