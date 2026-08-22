@@ -1,0 +1,16 @@
+# Single-axis swap: MHA → GQA (everything else fixed)
+includes:
+  - configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml
+  - configs/model/attn_gqa.yaml
+
+run:
+  name: layernorm_sinusoidal_relu_gqa
+  seed: 42
+  output_dir: runs
+
+model:
+  norm: layernorm
+  positional: sinusoidal
+  feedforward: relu
+  attention: gqa
+  num_kv_heads: 2

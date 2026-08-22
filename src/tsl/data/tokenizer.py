@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Iterable, Sequence
 
 from tokenizers import Tokenizer
+from tokenizers.decoders import ByteLevel as ByteLevelDecoder
 from tokenizers.models import BPE
 from tokenizers.pre_tokenizers import ByteLevel
 from tokenizers.processors import TemplateProcessing
@@ -42,6 +43,7 @@ def train_tokenizer(
     """Train a Byte-level BPE tokenizer on *texts*."""
     tokenizer = Tokenizer(BPE(unk_token=UNK_TOKEN))
     tokenizer.pre_tokenizer = ByteLevel(add_prefix_space=False)
+    tokenizer.decoder = ByteLevelDecoder()
     trainer = BpeTrainer(
         vocab_size=vocab_size,
         min_frequency=min_frequency,
@@ -75,6 +77,9 @@ def load_tokenizer(tokenizer_dir: str | Path) -> Tokenizer:
     if not path.is_file():
         raise FileNotFoundError(f"Tokenizer artifact not found: {path}")
     tokenizer = Tokenizer.from_file(str(path))
+    # Older smoke artifacts may lack a decoder; ByteLevel makes spaces readable.
+    if tokenizer.decoder is None:
+        tokenizer.decoder = ByteLevelDecoder()
     logger.info("Loaded tokenizer from %s (vocab=%s)", path, tokenizer.get_vocab_size())
     return tokenizer
 

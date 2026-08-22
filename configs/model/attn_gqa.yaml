@@ -1,0 +1,5 @@
+# Fragment: select GQA (keep query heads, reduce KV heads)
+# base_small uses num_heads=6 → num_kv_heads=2 (3 query heads share each KV head)
+model:
+  attention: gqa
+  num_kv_heads: 2

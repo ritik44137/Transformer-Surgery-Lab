@@ -1,8 +1,8 @@
 """Causal self-attention modules.
 
-Baseline: standard multi-head attention (MHA).
-Grouped-query attention (GQA) is added in Phase 5; ``num_kv_heads`` is already
-accepted so the factory contract does not need to change later.
+Swap axes:
+- Attention: MHA (baseline) vs GQA (Phase 5)
+- Positional: optional RoPE applied to Q/K (when ``use_rope=True``)
 """
 
 from __future__ import annotations
@@ -13,19 +13,40 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from tsl.constants import ATTN_MHA, ATTN_VARIANTS
+from tsl.constants import ATTN_GQA, ATTN_MHA, ATTN_VARIANTS
+from tsl.model.positional import RotaryEmbedding, apply_rotary_emb
+
+
+def repeat_kv(x: torch.Tensor, n_rep: int) -> torch.Tensor:
+    """Repeat KV heads so they align with query heads.
+
+    Input:  ``(batch, num_kv_heads, seq, head_dim)``
+    Output: ``(batch, num_kv_heads * n_rep, seq, head_dim)``
+
+    For GQA, each KV head is shared by ``n_rep = num_heads // num_kv_heads``
+    query heads.
+    """
+    if n_rep == 1:
+        return x
+    batch, n_kv, seq, head_dim = x.shape
+    x = x[:, :, None, :, :].expand(batch, n_kv, n_rep, seq, head_dim)
+    return x.reshape(batch, n_kv * n_rep, seq, head_dim)
 
 
 class CausalSelfAttention(nn.Module):
-    """Causal multi-head self-attention for a decoder-only transformer.
+    """Causal self-attention supporting MHA and GQA, with optional RoPE.
 
-    Tensor flow (MHA, ``num_kv_heads == num_heads``)::
+    Tensor flow::
 
         x:          (B, T, C)
-        q, k, v:    (B, T, C)  -> reshape -> (B, H, T, Dh)
-        scores:     (B, H, T, T) with causal mask
-        context:    (B, H, T, Dh) -> (B, T, C)
+        q:          (B, Hq, T, Dh)
+        k, v:       (B, Hkv, T, Dh)  — repeated to Hq for GQA
+        scores:     (B, Hq, T, T) with causal mask
         out:        (B, T, C)
+
+    Constraints:
+    - ``num_heads`` must be divisible by ``num_kv_heads``
+    - MHA is the special case ``num_kv_heads == num_heads``
     """
 
     def __init__(
@@ -36,6 +57,8 @@ class CausalSelfAttention(nn.Module):
         num_kv_heads: int | None = None,
         dropout: float = 0.0,
         max_seq_len: int = 2048,
+        use_rope: bool = False,
+        rope_base: float = 10000.0,
     ) -> None:
         super().__init__()
         if hidden_size % num_heads != 0:
@@ -47,25 +70,33 @@ class CausalSelfAttention(nn.Module):
         self.num_heads = num_heads
         self.num_kv_heads = num_kv_heads if num_kv_heads is not None else num_heads
         self.head_dim = hidden_size // num_heads
-        self.dropout_p = dropout
+        self.use_rope = use_rope
 
-        if self.num_kv_heads != self.num_heads:
-            # GQA wiring lands in Phase 5; keep the constructor ready.
-            raise NotImplementedError(
-                "num_kv_heads != num_heads requires GQA (Phase 5). "
-                f"Got num_heads={self.num_heads}, num_kv_heads={self.num_kv_heads}"
+        if self.num_kv_heads < 1 or self.num_heads % self.num_kv_heads != 0:
+            raise ValueError(
+                f"num_heads ({self.num_heads}) must be divisible by "
+                f"num_kv_heads ({self.num_kv_heads})"
             )
+        self.num_queries_per_kv = self.num_heads // self.num_kv_heads
 
-        self.q_proj = nn.Linear(hidden_size, hidden_size)
-        self.k_proj = nn.Linear(hidden_size, self.num_kv_heads * self.head_dim)
-        self.v_proj = nn.Linear(hidden_size, self.num_kv_heads * self.head_dim)
-        self.out_proj = nn.Linear(hidden_size, hidden_size)
+        self.q_proj = nn.Linear(hidden_size, self.num_heads * self.head_dim, bias=False)
+        self.k_proj = nn.Linear(hidden_size, self.num_kv_heads * self.head_dim, bias=False)
+        self.v_proj = nn.Linear(hidden_size, self.num_kv_heads * self.head_dim, bias=False)
+        self.out_proj = nn.Linear(hidden_size, hidden_size, bias=False)
         self.attn_dropout = nn.Dropout(dropout)
         self.resid_dropout = nn.Dropout(dropout)
 
         # Causal mask: True means "allowed to attend".
         mask = torch.tril(torch.ones(max_seq_len, max_seq_len, dtype=torch.bool))
         self.register_buffer("causal_mask", mask, persistent=False)
+
+        self.rotary: RotaryEmbedding | None
+        if use_rope:
+            self.rotary = RotaryEmbedding(
+                self.head_dim, max_seq_len=max_seq_len, base=rope_base
+            )
+        else:
+            self.rotary = None
 
     def _shape_heads(self, x: torch.Tensor, num_heads: int) -> torch.Tensor:
         """(B, T, H*Dh) -> (B, H, T, Dh)."""
@@ -86,14 +117,22 @@ class CausalSelfAttention(nn.Module):
         k = self._shape_heads(self.k_proj(x), self.num_kv_heads)
         v = self._shape_heads(self.v_proj(x), self.num_kv_heads)
 
-        # Scaled dot-product attention with explicit causal mask.
+        if self.rotary is not None:
+            cos, sin = self.rotary(seq)
+            q = apply_rotary_emb(q, cos, sin)
+            k = apply_rotary_emb(k, cos, sin)
+
+        # Expand KV heads to match query heads for GQA (no-op for MHA).
+        k = repeat_kv(k, self.num_queries_per_kv)
+        v = repeat_kv(v, self.num_queries_per_kv)
+
         scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.head_dim)
         causal = self.causal_mask[:seq, :seq]
         scores = scores.masked_fill(~causal, float("-inf"))
         weights = F.softmax(scores, dim=-1)
         weights = self.attn_dropout(weights)
 
-        context = torch.matmul(weights, v)  # (B, H, T, Dh)
+        context = torch.matmul(weights, v)  # (B, Hq, T, Dh)
         context = context.transpose(1, 2).contiguous().view(batch, seq, self.hidden_size)
         out = self.out_proj(context)
         return self.resid_dropout(out)
@@ -107,14 +146,14 @@ def build_attention(
     num_kv_heads: int | None = None,
     dropout: float = 0.0,
     max_seq_len: int = 2048,
+    use_rope: bool = False,
+    rope_base: float = 10000.0,
 ) -> nn.Module:
-    """Construct an attention module by config name.
-
-    Phase 3 supports ``mha`` only. ``gqa`` lands in Phase 5.
-    """
+    """Construct an attention module by config name."""
     kind = kind.lower()
     if kind not in ATTN_VARIANTS:
         raise ValueError(f"Unknown attention variant {kind!r}; expected one of {ATTN_VARIANTS}")
+
     if kind == ATTN_MHA:
         kv = num_kv_heads if num_kv_heads is not None else num_heads
         if kv != num_heads:
@@ -125,5 +164,26 @@ def build_attention(
             num_kv_heads=kv,
             dropout=dropout,
             max_seq_len=max_seq_len,
+            use_rope=use_rope,
+            rope_base=rope_base,
         )
-    raise NotImplementedError(f"Attention variant {kind!r} is not implemented yet (Phase 5).")
+
+    if kind == ATTN_GQA:
+        if num_kv_heads is None:
+            raise ValueError("GQA requires explicit num_kv_heads in config")
+        if num_kv_heads == num_heads:
+            raise ValueError(
+                "GQA expects num_kv_heads < num_heads; "
+                f"got num_heads={num_heads}, num_kv_heads={num_kv_heads}"
+            )
+        return CausalSelfAttention(
+            hidden_size,
+            num_heads,
+            num_kv_heads=num_kv_heads,
+            dropout=dropout,
+            max_seq_len=max_seq_len,
+            use_rope=use_rope,
+            rope_base=rope_base,
+        )
+
+    raise ValueError(f"Unhandled attention variant {kind!r}")

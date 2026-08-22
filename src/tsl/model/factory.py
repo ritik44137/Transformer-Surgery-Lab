@@ -14,6 +14,7 @@ from tsl.constants import (
     ATTN_MHA,
     FF_RELU,
     NORM_LAYERNORM,
+    POS_ROPE,
     POS_SINUSOIDAL,
 )
 from tsl.model.attention import build_attention
@@ -54,11 +55,14 @@ def build_model(cfg: Mapping[str, Any]) -> DecoderLM:
     dropout = float(m.get("dropout", 0.0))
     eps = float(m.get("norm_eps", 1e-5))
     tie_weights = bool(m.get("tie_weights", True))
+    scale_swiglu = bool(m.get("swiglu_scale_for_param_parity", True))
+    rope_base = float(m.get("rope_base", 10000.0))
 
     norm_kind = str(m.get("norm", NORM_LAYERNORM)).lower()
     pos_kind = str(m.get("positional", POS_SINUSOIDAL)).lower()
     ff_kind = str(m.get("feedforward", FF_RELU)).lower()
     attn_kind = str(m.get("attention", ATTN_MHA)).lower()
+    use_rope = pos_kind == POS_ROPE
 
     positional = build_positional(pos_kind, hidden_size, max_seq_len=max_seq_len)
     embeddings = TokenEmbeddings(
@@ -79,6 +83,8 @@ def build_model(cfg: Mapping[str, Any]) -> DecoderLM:
                 num_kv_heads=num_kv_heads,
                 dropout=dropout,
                 max_seq_len=max_seq_len,
+                use_rope=use_rope,
+                rope_base=rope_base,
             ),
             norm_ff=build_norm(norm_kind, hidden_size, eps=eps),
             feedforward=build_feedforward(
@@ -86,6 +92,7 @@ def build_model(cfg: Mapping[str, Any]) -> DecoderLM:
                 hidden_size,
                 d_ff=d_ff,
                 dropout=dropout,
+                scale_for_param_parity=scale_swiglu,
             ),
         )
         blocks.append(block)
@@ -103,11 +110,12 @@ def build_model(cfg: Mapping[str, Any]) -> DecoderLM:
 
     n_params = model.count_parameters()
     logger.info(
-        "Built DecoderLM: layers=%d hidden=%d heads=%d d_ff=%d vocab=%d params=%s "
-        "(norm=%s pos=%s ff=%s attn=%s)",
+        "Built DecoderLM: layers=%d hidden=%d heads=%d kv_heads=%d d_ff=%d vocab=%d "
+        "params=%s (norm=%s pos=%s ff=%s attn=%s)",
         num_layers,
         hidden_size,
         num_heads,
+        num_kv_heads,
         d_ff,
         vocab_size,
         f"{n_params:,}",

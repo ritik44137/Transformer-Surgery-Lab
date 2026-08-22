@@ -1,0 +1,10 @@
+# Mini RMSNorm swap for Phase 6 compare_runs gate
+includes:
+  - configs/experiments/rmsnorm_sinusoidal_relu_mha.yaml
+  - configs/model/mini.yaml
+  - configs/train/mini.yaml
+
+run:
+  name: rmsnorm_mini_gate
+  seed: 42
+  output_dir: runs

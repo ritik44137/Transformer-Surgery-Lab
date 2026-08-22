@@ -1,0 +1,4 @@
+# Fragment: select SwiGLU with ~param-parity d_ff scaling
+model:
+  feedforward: swiglu
+  swiglu_scale_for_param_parity: true

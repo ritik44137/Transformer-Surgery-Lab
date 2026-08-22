@@ -1,0 +1,21 @@
+# Combined modern stack (synthesis tier — run after single-axis comparisons)
+# RMSNorm + RoPE + SwiGLU + GQA
+includes:
+  - configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml
+  - configs/model/norm_rmsnorm.yaml
+  - configs/model/pos_rope.yaml
+  - configs/model/ff_swiglu.yaml
+  - configs/model/attn_gqa.yaml
+
+run:
+  name: rmsnorm_rope_swiglu_gqa
+  seed: 42
+  output_dir: runs
+
+model:
+  norm: rmsnorm
+  positional: rope
+  feedforward: swiglu
+  attention: gqa
+  num_kv_heads: 2
+  swiglu_scale_for_param_parity: true

@@ -5,7 +5,7 @@ COMPOSE := docker compose -f docker/docker-compose.yml
 IMAGE_DEV := tsl-dev:latest
 IMAGE_CPU := tsl-dev-cpu:latest
 
-.PHONY: help build build-cpu shell shell-cpu test lint format prepare-data prepare-data-smoke smoke train train-mini benchmark dashboard clean
+.PHONY: help build build-cpu shell shell-cpu test lint format prepare-data prepare-data-smoke smoke train train-mini evaluate benchmark compare-runs dashboard clean
 
 help:
 	@echo "Transformer Surgery Lab — available targets:"
@@ -21,7 +21,9 @@ help:
 	@echo "  smoke         Run smoke test pipeline"
 	@echo "  train         Launch baseline training"
 	@echo "  train-mini    Launch mini CPU gate training"
-	@echo "  benchmark     Run benchmark script on a checkpoint"
+	@echo "  evaluate      Evaluate a run (RUN_DIR=runs/<name>)"
+	@echo "  benchmark     Benchmark a run (RUN_DIR=runs/<name>)"
+	@echo "  compare-runs  Compare runs (RUNS='runs/a runs/b')"
 	@echo "  dashboard     Launch Streamlit dashboard"
 	@echo "  clean         Remove local Python caches"
 
@@ -62,8 +64,14 @@ train:
 train-mini:
 	$(COMPOSE) run --rm dev-cpu python scripts/train.py --config configs/experiments/baseline_mini_gate.yaml --device cpu
 
+evaluate:
+	$(COMPOSE) run --rm dev-cpu python scripts/evaluate.py --run-dir $(RUN_DIR) --device cpu --generate
+
 benchmark:
-	$(COMPOSE) run --rm dev-cpu python scripts/benchmark.py --help
+	$(COMPOSE) run --rm dev-cpu python scripts/benchmark.py --run-dir $(RUN_DIR) --device cpu
+
+compare-runs:
+	$(COMPOSE) run --rm dev-cpu python scripts/compare_runs.py --runs $(RUNS)
 
 dashboard:
 	$(COMPOSE) --profile dashboard up dashboard

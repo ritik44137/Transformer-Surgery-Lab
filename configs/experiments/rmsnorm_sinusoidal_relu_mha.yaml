@@ -1,0 +1,15 @@
+# Single-axis swap: LayerNorm → RMSNorm (everything else fixed)
+includes:
+  - configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml
+  - configs/model/norm_rmsnorm.yaml
+
+run:
+  name: rmsnorm_sinusoidal_relu_mha
+  seed: 42
+  output_dir: runs
+
+model:
+  norm: rmsnorm
+  positional: sinusoidal
+  feedforward: relu
+  attention: mha

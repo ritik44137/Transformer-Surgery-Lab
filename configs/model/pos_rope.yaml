@@ -1,0 +1,4 @@
+# Fragment: select RoPE (no additive sinusoidal PE)
+model:
+  positional: rope
+  rope_base: 10000.0

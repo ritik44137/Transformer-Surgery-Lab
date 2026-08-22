@@ -1,0 +1,15 @@
+# Single-axis swap: ReLU → SwiGLU (everything else fixed)
+includes:
+  - configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml
+  - configs/model/ff_swiglu.yaml
+
+run:
+  name: layernorm_sinusoidal_swiglu_mha
+  seed: 42
+  output_dir: runs
+
+model:
+  norm: layernorm
+  positional: sinusoidal
+  feedforward: swiglu
+  attention: mha

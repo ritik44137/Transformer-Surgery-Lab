@@ -1,0 +1,3 @@
+run_name,norm,positional,feedforward,attention,best_val_loss,best_perplexity,final_train_loss,param_count,tokens_per_sec,forward_latency_ms,gen_latency_ms,peak_memory_mb,total_steps
+baseline_mini_gate,layernorm,sinusoidal,relu,mha,44.795936584472656,485165195.4097903,44.17984390258789,98560,182664.01914753002,1.8192816666745177,10.284971999984313,,20
+rmsnorm_mini_gate,rmsnorm,sinusoidal,relu,mha,41.11171849568685,485165195.4097903,40.70514678955078,98240,195010.152334137,2.059948666631802,10.614775333351645,,20

@@ -1,0 +1,3 @@
+# Fragment: select RMSNorm
+model:
+  norm: rmsnorm

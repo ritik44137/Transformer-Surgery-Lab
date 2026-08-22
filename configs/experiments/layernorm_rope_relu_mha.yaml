@@ -1,0 +1,15 @@
+# Single-axis swap: sinusoidal → RoPE (everything else fixed)
+includes:
+  - configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml
+  - configs/model/pos_rope.yaml
+
+run:
+  name: layernorm_rope_relu_mha
+  seed: 42
+  output_dir: runs
+
+model:
+  norm: layernorm
+  positional: rope
+  feedforward: relu
+  attention: mha

@@ -1,0 +1,54 @@
+# Official experiment grid for Transformer Surgery Lab
+#
+# This is a *manifest*, not a training config. It documents which experiment
+# YAML files form the primary comparison story vs optional follow-ups.
+#
+# Launch any run with:
+#   python scripts/train.py --config configs/experiments/<name>.yaml
+
+grid:
+  # ---- Primary comparison story (run these first) ----
+  primary:
+    - name: baseline_classical
+      config: configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml
+      variants: {norm: layernorm, positional: sinusoidal, feedforward: relu, attention: mha}
+      role: classical reference (LayerNorm + sinusoidal + ReLU + MHA)
+
+    - name: swap_rmsnorm
+      config: configs/experiments/rmsnorm_sinusoidal_relu_mha.yaml
+      variants: {norm: rmsnorm, positional: sinusoidal, feedforward: relu, attention: mha}
+      role: single-axis — normalization only
+
+    - name: swap_rope
+      config: configs/experiments/layernorm_rope_relu_mha.yaml
+      variants: {norm: layernorm, positional: rope, feedforward: relu, attention: mha}
+      role: single-axis — positional encoding only
+
+    - name: swap_swiglu
+      config: configs/experiments/layernorm_sinusoidal_swiglu_mha.yaml
+      variants: {norm: layernorm, positional: sinusoidal, feedforward: swiglu, attention: mha}
+      role: single-axis — feed-forward only
+
+    - name: swap_gqa
+      config: configs/experiments/layernorm_sinusoidal_relu_gqa.yaml
+      variants: {norm: layernorm, positional: sinusoidal, feedforward: relu, attention: gqa}
+      role: single-axis — attention only
+
+  # ---- Synthesis / second tier (after primary is stable) ----
+  synthesis:
+    - name: modern_stack
+      config: configs/experiments/rmsnorm_rope_swiglu_gqa.yaml
+      variants: {norm: rmsnorm, positional: rope, feedforward: swiglu, attention: gqa}
+      role: combined modern stack vs classical baseline
+
+  # Optional utilities (not part of the comparison matrix)
+  utilities:
+    - name: mini_gate
+      config: configs/experiments/baseline_mini_gate.yaml
+      role: short CPU smoke training for plumbing checks
+
+notes:
+  - Keep dataset, tokenizer, seed, and train budget fixed across primary runs.
+  - SwiGLU uses swiglu_scale_for_param_parity=true (~2/3 d_ff) for fairer param counts.
+  - GQA keeps num_heads=6 and sets num_kv_heads=2 for base_small.
+  - Swap data include to configs/data/tinystories.yaml for official comparison runs.
