@@ -40,11 +40,11 @@ make dashboard    # launch Streamlit (once implemented)
 
 - [x] Project scaffold and Docker environment
 - [X] Config system, data pipeline, and TinyStories preparation
-- [ ] Baseline decoder-only transformer (LayerNorm / sinusoidal / ReLU / MHA)
-- [ ] Training loop, checkpoints, and artifact tracking
-- [ ] Architectural swaps and experiment matrix
-- [ ] Evaluation, benchmarking, and comparison tooling
-- [ ] Streamlit dashboard
+- [X] Baseline decoder-only transformer (LayerNorm / sinusoidal / ReLU / MHA)
+- [X] Training loop, checkpoints, and artifact tracking
+- [X] Architectural swaps and experiment matrix
+- [X] Evaluation, benchmarking, and comparison tooling
+- [X] Streamlit dashboard
 - [ ] Tests, lessons learned, and publication polish
 
 ## Results
