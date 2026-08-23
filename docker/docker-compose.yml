@@ -14,7 +14,7 @@ services:
     volumes:
       - ..:/workspace
     environment:
-      - PYTHONPATH=/workspace/src
+      - PYTHONPATH=/workspace/src:/workspace
     stdin_open: true
     tty: true
     deploy:
@@ -34,7 +34,7 @@ services:
     volumes:
       - ..:/workspace
     environment:
-      - PYTHONPATH=/workspace/src
+      - PYTHONPATH=/workspace/src:/workspace
     stdin_open: true
     tty: true
 

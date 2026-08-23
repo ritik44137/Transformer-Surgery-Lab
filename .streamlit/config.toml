@@ -1,0 +1,13 @@
+# Streamlit theme for the Transformer Surgery Lab dashboard.
+# Keeps widget accents (pills, radios, focus rings) in the same palette as
+# dashboard/components.py instead of Streamlit's default red.
+
+[theme]
+base = "dark"
+primaryColor = "#8b5cf6"
+backgroundColor = "#070b16"
+secondaryBackgroundColor = "#121a2e"
+textColor = "#f1f5f9"
+
+[browser]
+gatherUsageStats = false
