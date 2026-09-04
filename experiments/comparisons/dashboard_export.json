@@ -1,0 +1,314 @@
+{
+  "n_runs": 2,
+  "runs": [
+    {
+      "run_name": "baseline_mini_gate",
+      "run_dir": "runs/baseline_mini_gate",
+      "norm": "layernorm",
+      "positional": "sinusoidal",
+      "feedforward": "relu",
+      "attention": "mha",
+      "best_val_loss": 44.795936584472656,
+      "best_perplexity": 485165195.4097903,
+      "final_train_loss": 44.17984390258789,
+      "total_steps": 20,
+      "param_count": 98560,
+      "tokens_per_sec": 182664.01914753002,
+      "forward_latency_ms": 1.8192816666745177,
+      "gen_latency_ms": 10.284971999984313,
+      "peak_memory_mb": null,
+      "model_variants": {
+        "norm": "layernorm",
+        "positional": "sinusoidal",
+        "feedforward": "relu",
+        "attention": "mha"
+      },
+      "train_curve": [
+        {
+          "step": 1,
+          "loss": 53.267173767089844
+        },
+        {
+          "step": 5,
+          "loss": 50.88295364379883
+        },
+        {
+          "step": 10,
+          "loss": 47.995845794677734
+        },
+        {
+          "step": 15,
+          "loss": 44.723976135253906
+        },
+        {
+          "step": 20,
+          "loss": 45.33833312988281
+        },
+        {
+          "step": 1,
+          "loss": 53.267173767089844
+        },
+        {
+          "step": 5,
+          "loss": 50.88295364379883
+        },
+        {
+          "step": 10,
+          "loss": 47.995845794677734
+        },
+        {
+          "step": 15,
+          "loss": 44.723976135253906
+        },
+        {
+          "step": 20,
+          "loss": 45.33833312988281
+        },
+        {
+          "step": 1,
+          "loss": 53.09762191772461
+        },
+        {
+          "step": 5,
+          "loss": 51.121543884277344
+        },
+        {
+          "step": 10,
+          "loss": 47.8183708190918
+        },
+        {
+          "step": 15,
+          "loss": 46.06618118286133
+        },
+        {
+          "step": 20,
+          "loss": 44.17984390258789
+        }
+      ],
+      "eval_curve": [
+        {
+          "step": 10,
+          "val_loss": 47.64087931315104
+        },
+        {
+          "step": 20,
+          "val_loss": 45.16862233479818
+        },
+        {
+          "step": 10,
+          "val_loss": 47.64087931315104
+        },
+        {
+          "step": 20,
+          "val_loss": 45.16862233479818
+        },
+        {
+          "step": 10,
+          "val_loss": 47.188228607177734
+        },
+        {
+          "step": 20,
+          "val_loss": 44.795936584472656
+        }
+      ],
+      "benchmark": {
+        "param_count": 98560,
+        "tokens_per_sec": 182664.01914753002,
+        "forward_latency_ms": 1.8192816666745177,
+        "gen_latency_ms": 10.284971999984313,
+        "trainable_params": 98560,
+        "checkpoint": "runs/baseline_mini_gate/checkpoint_best.pt",
+        "device": "cpu",
+        "throughput": {
+          "mode": "inference",
+          "tokens_per_sec": 182664.01914753002,
+          "batch_size": 8,
+          "seq_len": 64,
+          "num_iters": 3,
+          "elapsed_s": 0.008408881000036672
+        },
+        "forward": {
+          "kind": "forward",
+          "batch_size": 8,
+          "seq_len": 64,
+          "num_iters": 3,
+          "forward_latency_ms": 1.8192816666745177,
+          "mean_ms": 1.8192816666745177,
+          "median_ms": 1.636858999972901,
+          "stdev_ms": 0.32097372996110846,
+          "min_ms": 1.5505239999811238,
+          "max_ms": 2.2704620000695286
+        },
+        "generation": {
+          "kind": "generation",
+          "prompt_len": 16,
+          "max_new_tokens": 16,
+          "num_iters": 3,
+          "gen_latency_ms": 10.284971999984313,
+          "ms_per_token": 0.6428107499990195,
+          "mean_ms": 10.284971999984313,
+          "median_ms": 9.89563099994939,
+          "stdev_ms": 1.5396134892520623,
+          "min_ms": 8.624400000030619,
+          "max_ms": 12.334884999972928
+        },
+        "memory": {
+          "peak_memory_mb": null,
+          "device": "cpu",
+          "available": false,
+          "note": "Peak memory reporting requires CUDA"
+        }
+      },
+      "summary": {
+        "run_name": "baseline_mini_gate",
+        "best_val_loss": 44.795936584472656,
+        "final_train_loss": 44.17984390258789,
+        "best_step": 20,
+        "total_steps": 20,
+        "param_count": 98560,
+        "model_variants": {
+          "norm": "layernorm",
+          "positional": "sinusoidal",
+          "feedforward": "relu",
+          "attention": "mha"
+        },
+        "best_perplexity": 485165195.4097903
+      }
+    },
+    {
+      "run_name": "rmsnorm_mini_gate",
+      "run_dir": "runs/rmsnorm_mini_gate",
+      "norm": "rmsnorm",
+      "positional": "sinusoidal",
+      "feedforward": "relu",
+      "attention": "mha",
+      "best_val_loss": 41.11171849568685,
+      "best_perplexity": 485165195.4097903,
+      "final_train_loss": 40.70514678955078,
+      "total_steps": 20,
+      "param_count": 98240,
+      "tokens_per_sec": 195010.152334137,
+      "forward_latency_ms": 2.059948666631802,
+      "gen_latency_ms": 10.614775333351645,
+      "peak_memory_mb": null,
+      "model_variants": {
+        "norm": "rmsnorm",
+        "positional": "sinusoidal",
+        "feedforward": "relu",
+        "attention": "mha"
+      },
+      "train_curve": [
+        {
+          "step": 1,
+          "loss": 50.30918884277344
+        },
+        {
+          "step": 5,
+          "loss": 47.91925811767578
+        },
+        {
+          "step": 10,
+          "loss": 44.42711639404297
+        },
+        {
+          "step": 15,
+          "loss": 42.385032653808594
+        },
+        {
+          "step": 20,
+          "loss": 40.70514678955078
+        }
+      ],
+      "eval_curve": [
+        {
+          "step": 10,
+          "val_loss": 43.65524164835612
+        },
+        {
+          "step": 20,
+          "val_loss": 41.11171849568685
+        }
+      ],
+      "benchmark": {
+        "param_count": 98240,
+        "tokens_per_sec": 195010.152334137,
+        "forward_latency_ms": 2.059948666631802,
+        "gen_latency_ms": 10.614775333351645,
+        "trainable_params": 98240,
+        "checkpoint": "runs/rmsnorm_mini_gate/checkpoint_best.pt",
+        "device": "cpu",
+        "throughput": {
+          "mode": "inference",
+          "tokens_per_sec": 195010.152334137,
+          "batch_size": 8,
+          "seq_len": 64,
+          "num_iters": 3,
+          "elapsed_s": 0.007876513000041996
+        },
+        "forward": {
+          "kind": "forward",
+          "batch_size": 8,
+          "seq_len": 64,
+          "num_iters": 3,
+          "forward_latency_ms": 2.059948666631802,
+          "mean_ms": 2.059948666631802,
+          "median_ms": 1.8905849999555357,
+          "stdev_ms": 0.33485946680708917,
+          "min_ms": 1.7616379999481069,
+          "max_ms": 2.527622999991763
+        },
+        "generation": {
+          "kind": "generation",
+          "prompt_len": 16,
+          "max_new_tokens": 16,
+          "num_iters": 3,
+          "gen_latency_ms": 10.614775333351645,
+          "ms_per_token": 0.6634234583344778,
+          "mean_ms": 10.614775333351645,
+          "median_ms": 11.32687699998769,
+          "stdev_ms": 1.0970122799788677,
+          "min_ms": 9.065059000022302,
+          "max_ms": 11.452390000044943
+        },
+        "memory": {
+          "peak_memory_mb": null,
+          "device": "cpu",
+          "available": false,
+          "note": "Peak memory reporting requires CUDA"
+        }
+      },
+      "summary": {
+        "run_name": "rmsnorm_mini_gate",
+        "best_val_loss": 41.11171849568685,
+        "final_train_loss": 40.70514678955078,
+        "best_step": 20,
+        "total_steps": 20,
+        "param_count": 98240,
+        "model_variants": {
+          "norm": "rmsnorm",
+          "positional": "sinusoidal",
+          "feedforward": "relu",
+          "attention": "mha"
+        },
+        "best_perplexity": 485165195.4097903
+      }
+    }
+  ],
+  "columns": [
+    "run_name",
+    "run_dir",
+    "norm",
+    "positional",
+    "feedforward",
+    "attention",
+    "best_val_loss",
+    "best_perplexity",
+    "final_train_loss",
+    "total_steps",
+    "param_count",
+    "tokens_per_sec",
+    "forward_latency_ms",
+    "gen_latency_ms",
+    "peak_memory_mb"
+  ]
+}

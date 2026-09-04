@@ -77,8 +77,9 @@ coverage.xml
 # --- Streamlit ---
 .streamlit/secrets.toml
 
-# --- Dashboard / assets (generated) ---
-assets/dashboard_screenshot.png
+# --- Dashboard screenshot (add manually when ready to publish) ---
+# Keep the assets/ folder; track the screenshot once captured.
+# assets/dashboard_screenshot.png
 
 # --- Editor and OS ---
 .idea/

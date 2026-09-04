@@ -111,7 +111,7 @@ def make_benchmark(
     peak_memory_mb: float | None = None,
     extra: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Benchmark artifact shape (filled in Phase 6)."""
+    """Benchmark artifact shape (params, throughput, latency, memory)."""
     out: dict[str, Any] = {"param_count": int(param_count)}
     if tokens_per_sec is not None:
         out["tokens_per_sec"] = float(tokens_per_sec)

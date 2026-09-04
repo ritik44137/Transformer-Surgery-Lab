@@ -5,7 +5,7 @@ COMPOSE := docker compose -f docker/docker-compose.yml
 IMAGE_DEV := tsl-dev:latest
 IMAGE_CPU := tsl-dev-cpu:latest
 
-.PHONY: help build build-cpu shell shell-cpu test lint format prepare-data prepare-data-smoke smoke train train-mini evaluate benchmark compare-runs dashboard clean
+.PHONY: help build build-cpu shell shell-cpu test lint format prepare-data prepare-data-smoke smoke train train-mini evaluate benchmark compare-runs export-dashboard dashboard clean
 
 help:
 	@echo "Transformer Surgery Lab — available targets:"
@@ -24,6 +24,7 @@ help:
 	@echo "  evaluate      Evaluate a run (RUN_DIR=runs/<name>)"
 	@echo "  benchmark     Benchmark a run (RUN_DIR=runs/<name>)"
 	@echo "  compare-runs  Compare runs (RUNS='runs/a runs/b')"
+	@echo "  export-dashboard  Bundle runs into dashboard_export.json"
 	@echo "  dashboard     Launch Streamlit dashboard"
 	@echo "  clean         Remove local Python caches"
 
@@ -72,6 +73,9 @@ benchmark:
 
 compare-runs:
 	$(COMPOSE) run --rm dev-cpu python scripts/compare_runs.py --runs $(RUNS)
+
+export-dashboard:
+	$(COMPOSE) run --rm dev-cpu python scripts/export_dashboard_data.py $(if $(RUNS),--runs $(RUNS),)
 
 dashboard:
 	$(COMPOSE) --profile dashboard up dashboard

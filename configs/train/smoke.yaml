@@ -1,0 +1,14 @@
+# Ultra-fast train settings for scripts/smoke_test.py (CPU-friendly)
+
+train:
+  max_steps: 2
+  batch_size: 2
+  eval_interval: 1
+  log_interval: 1
+  learning_rate: 3.0e-4
+  weight_decay: 0.0
+  warmup_steps: 0
+  grad_clip: 1.0
+  scheduler: cosine
+  min_lr_ratio: 0.1
+  eval_max_batches: 1
