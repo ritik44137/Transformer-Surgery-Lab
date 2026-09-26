@@ -1,4 +1,4 @@
-"""Tokens-per-second throughput measurement."""
+"""Forward and train-step tokens/sec on random batches."""
 
 from __future__ import annotations
 
@@ -25,7 +25,6 @@ def measure_inference_throughput(
     num_warmup: int = 3,
     num_iters: int = 10,
 ) -> dict[str, Any]:
-    """Measure forward-pass tokens/sec on random token batches."""
     model.eval()
     model.to(device)
     ids = torch.randint(0, vocab_size, (batch_size, seq_len), device=device)
@@ -61,7 +60,6 @@ def measure_train_throughput(
     num_warmup: int = 2,
     num_iters: int = 5,
 ) -> dict[str, Any]:
-    """Measure train-step tokens/sec (forward + backward + optimizer step)."""
     from tsl.train.losses import causal_lm_loss
 
     model.train()
@@ -109,7 +107,6 @@ def measure_throughput(
     num_warmup: int = 3,
     num_iters: int = 10,
 ) -> dict[str, Any]:
-    """Dispatch to inference or train throughput measurement."""
     if mode == "inference":
         return measure_inference_throughput(
             model,

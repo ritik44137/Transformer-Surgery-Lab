@@ -1,7 +1,6 @@
 # Comparison artifacts
 
-Derived tables and bundles produced from run directories under `runs/<name>/`.
-**Source of truth** is always the individual run (config, metrics JSONL, summary, benchmark). Files here are convenience exports for CLI review, archiving, and demos.
+Tables copied out of `runs/<name>/` for the CLI and for keeping a snapshot around. If these disagree with the run directory, trust the run directory.
 
 ## Generate
 
@@ -16,7 +15,7 @@ python scripts/compare_runs.py \
   --name phase6_gate
 ```
 
-Dashboard-friendly aggregate (curves + comparison fields):
+One JSON file with comparison fields and the loss curves:
 
 ```bash
 python scripts/export_dashboard_data.py
@@ -33,6 +32,4 @@ python scripts/export_dashboard_data.py
 
 Example already present: `phase6_gate.json` / `phase6_gate.csv` (mini-gate baseline vs RMSNorm).
 
-## Not source of truth
-
-Do not edit these exports by hand. Re-run the scripts after training, evaluating, or benchmarking so they stay aligned with `runs/`.
+Don't edit the JSON or CSV by hand. Re-run the scripts after you train or benchmark.

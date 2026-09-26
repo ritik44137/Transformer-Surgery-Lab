@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare multiple TSL run directories into a compact table / JSON / CSV."""
+"""Print a comparison table and write JSON/CSV under experiments/comparisons."""
 
 from __future__ import annotations
 
@@ -67,7 +67,6 @@ def main() -> int:
     bundles = load_runs(args.runs)
     rows = [comparison_row(b) for b in bundles]
 
-    # Pretty CLI table
     widths = {c: max(len(c), max((len(_fmt(r.get(c))) for r in rows), default=1)) for c in COLUMNS}
     header = "  ".join(c.ljust(widths[c]) for c in COLUMNS)
     print(header)

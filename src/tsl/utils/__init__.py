@@ -1,5 +1,3 @@
-"""Utility subpackage exports."""
-
 from tsl.utils.device import device_info, get_device
 from tsl.utils.io import (
     append_jsonl,

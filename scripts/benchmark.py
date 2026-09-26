@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Efficiency benchmarks: params, throughput, latency, memory."""
+"""Write benchmark.json: params, tok/s, latency, peak memory."""
 
 from __future__ import annotations
 
@@ -53,7 +53,6 @@ def main() -> int:
     bench_cfg = cfg.get("benchmark", {})
     batch_size = int(args.batch_size or bench_cfg.get("batch_size", 8))
     seq_len = int(args.seq_len or bench_cfg.get("seq_len", cfg.get("data", {}).get("seq_len", 64)))
-    # Clamp to model max_seq_len
     max_seq = int(cfg.get("model", {}).get("max_seq_len", seq_len))
     seq_len = min(seq_len, max_seq)
     num_warmup = int(args.num_warmup or bench_cfg.get("num_warmup", 3))

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Demonstrate that all Phase 5 architecture swaps work."""
+"""Build each architecture swap on a tiny config and check it backprops."""
 
 from __future__ import annotations
 

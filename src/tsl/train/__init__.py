@@ -1,5 +1,3 @@
-"""Training subpackage exports."""
-
 from tsl.train.checkpointing import load_checkpoint, save_checkpoint
 from tsl.train.losses import causal_lm_loss
 from tsl.train.optimizer import build_optimizer

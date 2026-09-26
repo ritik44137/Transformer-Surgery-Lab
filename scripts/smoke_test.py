@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Top-level repo health check: config → model → toy train/eval → artifacts.
-
-Runs quickly on CPU with synthetic batches (no dataset download required).
-"""
+"""CPU smoke check: tiny model, fake batches, writes a temp run dir."""
 
 from __future__ import annotations
 

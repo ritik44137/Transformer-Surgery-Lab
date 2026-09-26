@@ -1,4 +1,4 @@
-"""Small autoregressive text generation for qualitative samples."""
+"""Greedy or sampled continuation. temperature <= 0 is argmax."""
 
 from __future__ import annotations
 
@@ -17,11 +17,6 @@ def generate(
     top_k: int | None = None,
     eos_id: int | None = None,
 ) -> torch.Tensor:
-    """Greedy / sampled generation from *prompt_ids* ``(batch, prompt_len)``.
-
-    Returns the full sequence ``(batch, prompt_len + generated)``.
-    Temperature ``<= 0`` forces greedy (argmax) decoding.
-    """
     model.eval()
     if prompt_ids.ndim != 2:
         raise ValueError(f"prompt_ids must be (B, T), got {tuple(prompt_ids.shape)}")
@@ -31,8 +26,7 @@ def generate(
     tokens = tokens.to(device)
 
     for _ in range(max_new_tokens):
-        # Crop to model context if needed (use last max_seq if attribute exists).
-        logits = model(tokens)  # (B, T, V)
+        logits = model(tokens)
         next_logits = logits[:, -1, :]
 
         if temperature is None or temperature <= 0:
@@ -62,11 +56,10 @@ def generate_text(
     temperature: float = 0.8,
     top_k: int | None = 40,
 ) -> dict[str, str | list[int]]:
-    """Encode *prompt*, generate, and decode to a sample dict."""
-    from tsl.data.tokenizer import encode, decode
+    from tsl.data.tokenizer import decode, encode
 
     ids = encode(tokenizer, prompt, add_special_tokens=True)
-    # Drop trailing EOS from the prompt encoding so generation can continue.
+    # drop the EOS the post-processor stuck on the prompt, or generation stops immediately
     eos_id = tokenizer.token_to_id("<eos>")
     if eos_id is not None and ids and ids[-1] == eos_id:
         ids = ids[:-1]

@@ -1,14 +1,9 @@
-"""Canonical names for artifacts, metrics, and architecture variants.
+"""String constants shared by configs, run artifacts, and the dashboard.
 
-Keep all string identifiers here so configs, tracking, and the dashboard
-stay consistent across experiments.
+Variant names have to match the values written in the YAML.
 """
 
 from __future__ import annotations
-
-# ---------------------------------------------------------------------------
-# Architecture variant names (must match config values)
-# ---------------------------------------------------------------------------
 
 NORM_LAYERNORM = "layernorm"
 NORM_RMSNORM = "rmsnorm"
@@ -26,10 +21,6 @@ ATTN_MHA = "mha"
 ATTN_GQA = "gqa"
 ATTN_VARIANTS = (ATTN_MHA, ATTN_GQA)
 
-# ---------------------------------------------------------------------------
-# Artifact filenames inside a run directory
-# ---------------------------------------------------------------------------
-
 CONFIG_RESOLVED_FILENAME = "config_resolved.yaml"
 METADATA_FILENAME = "metadata.json"
 METRICS_TRAIN_FILENAME = "metrics_train.jsonl"
@@ -40,25 +31,16 @@ CHECKPOINT_LATEST = "checkpoint_latest.pt"
 CHECKPOINT_BEST = "checkpoint_best.pt"
 SAMPLES_FILENAME = "samples.json"
 
-# ---------------------------------------------------------------------------
-# Directory names
-# ---------------------------------------------------------------------------
-
 RUNS_DIRNAME = "runs"
 CHECKPOINTS_DIRNAME = "checkpoints"
 DATA_RAW_DIRNAME = "raw"
 DATA_PROCESSED_DIRNAME = "processed"
 DATA_TOKENIZER_DIRNAME = "tokenizer"
 
-# Processed data artifact names
 TRAIN_TOKENS_FILENAME = "train_tokens.npy"
 VAL_TOKENS_FILENAME = "val_tokens.npy"
 DATA_META_FILENAME = "meta.json"
 TOKENIZER_FILENAME = "tokenizer.json"
-
-# ---------------------------------------------------------------------------
-# Metric keys (train / eval / benchmark / summary)
-# ---------------------------------------------------------------------------
 
 METRIC_STEP = "step"
 METRIC_LOSS = "loss"

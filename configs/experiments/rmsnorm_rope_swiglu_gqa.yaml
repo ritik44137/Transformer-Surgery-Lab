@@ -1,4 +1,4 @@
-# Combined modern stack (synthesis tier — run after single-axis comparisons)
+# All four swaps at once. Meant to be compared after the single-axis runs.
 # RMSNorm + RoPE + SwiGLU + GQA
 includes:
   - configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml

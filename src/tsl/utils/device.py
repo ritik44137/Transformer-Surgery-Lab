@@ -1,5 +1,3 @@
-"""Device selection and runtime info helpers."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -8,18 +6,12 @@ import torch
 
 
 def get_device(prefer_cuda: bool = True) -> torch.device:
-    """Return ``cuda`` if available and preferred, otherwise ``cpu``.
-
-    Defaults to using CUDA when present so training scripts do not need
-    special-casing. Pass ``prefer_cuda=False`` to force CPU (e.g. smoke tests).
-    """
     if prefer_cuda and torch.cuda.is_available():
         return torch.device("cuda")
     return torch.device("cpu")
 
 
 def device_info(device: torch.device | None = None) -> dict[str, Any]:
-    """Return a small, JSON-friendly snapshot of runtime device state."""
     if device is None:
         device = get_device()
 

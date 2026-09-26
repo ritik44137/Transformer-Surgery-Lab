@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Aggregate run artifacts into a compact dashboard-friendly export bundle.
-
-Reuses :mod:`tsl.tracking.reader` so the export stays aligned with the
-dashboard and ``compare_runs`` without duplicating load logic.
-"""
+"""Dump run artifacts to one JSON file the dashboard can also load offline."""
 
 from __future__ import annotations
 
@@ -24,7 +20,6 @@ logger = get_logger("export_dashboard_data")
 
 
 def discover_run_dirs(runs_root: Path) -> list[Path]:
-    """Return run directories that look complete enough to export."""
     if not runs_root.is_dir():
         return []
     found: list[Path] = []
@@ -37,7 +32,6 @@ def discover_run_dirs(runs_root: Path) -> list[Path]:
 
 
 def build_bundle(bundles: list[dict]) -> dict:
-    """Compact export: comparison rows + per-run metric series."""
     runs_out = []
     for b in bundles:
         row = comparison_row(b)

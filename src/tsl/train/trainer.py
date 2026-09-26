@@ -1,4 +1,4 @@
-"""High-level training loop coordinator."""
+"""Training loop: step, log, eval, checkpoint."""
 
 from __future__ import annotations
 
@@ -19,8 +19,6 @@ logger = get_logger(__name__)
 
 
 class Trainer:
-    """Coordinates dataloaders, model, optimizer, logging, eval, and checkpoints."""
-
     def __init__(
         self,
         *,
@@ -76,7 +74,6 @@ class Trainer:
         self.paths = checkpoint_paths(writer.run_dir)
 
     def train(self) -> dict[str, Any]:
-        """Run training until ``max_steps``. Returns the final summary dict."""
         self.model.train()
         train_iter = iter(self.train_loader)
 
@@ -128,7 +125,6 @@ class Trainer:
                 self._evaluate_and_checkpoint()
 
         summary = self._write_summary()
-        logger.info("Training complete.")
         return summary
 
     def _evaluate_and_checkpoint(self) -> None:

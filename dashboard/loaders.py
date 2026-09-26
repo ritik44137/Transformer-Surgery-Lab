@@ -1,4 +1,4 @@
-"""Load experiment run artifacts into dashboard-friendly structures."""
+"""Find runs/ and turn them into the dicts the charts expect."""
 
 from __future__ import annotations
 
@@ -17,7 +17,6 @@ def default_runs_dir() -> Path:
 
 
 def discover_runs(runs_dir: str | Path | None = None) -> list[Path]:
-    """Return run directories that look like completed experiments."""
     root = Path(runs_dir) if runs_dir else default_runs_dir()
     if not root.is_dir():
         return []
@@ -35,7 +34,6 @@ def load_dashboard_runs(
     *,
     runs_dir: str | Path | None = None,
 ) -> list[dict[str, Any]]:
-    """Load selected runs (or all discovered runs) as full bundles."""
     if run_dirs is None:
         run_dirs = discover_runs(runs_dir)
     if not run_dirs:
@@ -47,7 +45,6 @@ def load_dashboard_runs(
 
 
 def loss_series(bundle: dict[str, Any]) -> dict[str, list[float]]:
-    """Extract train/eval loss series for plotting."""
     train = bundle.get("train_metrics") or []
     eval_rows = bundle.get("eval_metrics") or []
     return {
@@ -59,7 +56,6 @@ def loss_series(bundle: dict[str, Any]) -> dict[str, list[float]]:
 
 
 def overview_stats(bundles: list[dict[str, Any]]) -> dict[str, Any]:
-    """Aggregate KPIs across selected runs for the top metric row."""
     if not bundles:
         return {
             "n_runs": 0,

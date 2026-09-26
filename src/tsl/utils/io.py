@@ -1,5 +1,3 @@
-"""Small file I/O helpers for configs and experiment artifacts."""
-
 from __future__ import annotations
 
 import json
@@ -10,20 +8,17 @@ import yaml
 
 
 def ensure_dir(path: str | Path) -> Path:
-    """Create a directory (and parents) if needed; return the Path."""
     path = Path(path)
     path.mkdir(parents=True, exist_ok=True)
     return path
 
 
 def read_json(path: str | Path) -> Any:
-    """Read a JSON file."""
     with Path(path).open("r", encoding="utf-8") as f:
         return json.load(f)
 
 
 def write_json(data: Any, path: str | Path, *, indent: int = 2) -> Path:
-    """Write *data* as pretty JSON. Creates parent directories."""
     path = Path(path)
     ensure_dir(path.parent)
     with path.open("w", encoding="utf-8") as f:
@@ -33,7 +28,6 @@ def write_json(data: Any, path: str | Path, *, indent: int = 2) -> Path:
 
 
 def append_jsonl(record: Mapping[str, Any], path: str | Path) -> Path:
-    """Append one JSON object as a line to a JSONL file."""
     path = Path(path)
     ensure_dir(path.parent)
     with path.open("a", encoding="utf-8") as f:
@@ -42,7 +36,6 @@ def append_jsonl(record: Mapping[str, Any], path: str | Path) -> Path:
 
 
 def read_jsonl(path: str | Path) -> Iterator[dict[str, Any]]:
-    """Yield records from a JSONL file."""
     with Path(path).open("r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -51,7 +44,6 @@ def read_jsonl(path: str | Path) -> Iterator[dict[str, Any]]:
 
 
 def write_jsonl(records: Iterable[Mapping[str, Any]], path: str | Path) -> Path:
-    """Overwrite a JSONL file with *records*."""
     path = Path(path)
     ensure_dir(path.parent)
     with path.open("w", encoding="utf-8") as f:
@@ -61,13 +53,11 @@ def write_jsonl(records: Iterable[Mapping[str, Any]], path: str | Path) -> Path:
 
 
 def read_yaml(path: str | Path) -> Any:
-    """Read a YAML file."""
     with Path(path).open("r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
 def write_yaml(data: Any, path: str | Path) -> Path:
-    """Write *data* as YAML. Creates parent directories."""
     path = Path(path)
     ensure_dir(path.parent)
     with path.open("w", encoding="utf-8") as f:
@@ -82,5 +72,4 @@ def write_yaml(data: Any, path: str | Path) -> Path:
 
 
 def run_dir(output_dir: str | Path, run_name: str) -> Path:
-    """Return ``output_dir / run_name``, creating it if needed."""
     return ensure_dir(Path(output_dir) / run_name)

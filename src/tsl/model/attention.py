@@ -1,9 +1,4 @@
-"""Causal self-attention modules.
-
-Swap axes:
-- Attention: MHA (baseline) vs GQA (Phase 5)
-- Positional: optional RoPE applied to Q/K (when ``use_rope=True``)
-"""
+"""Causal self-attention. MHA or GQA, with optional RoPE on Q and K."""
 
 from __future__ import annotations
 
@@ -18,14 +13,7 @@ from tsl.model.positional import RotaryEmbedding, apply_rotary_emb
 
 
 def repeat_kv(x: torch.Tensor, n_rep: int) -> torch.Tensor:
-    """Repeat KV heads so they align with query heads.
-
-    Input:  ``(batch, num_kv_heads, seq, head_dim)``
-    Output: ``(batch, num_kv_heads * n_rep, seq, head_dim)``
-
-    For GQA, each KV head is shared by ``n_rep = num_heads // num_kv_heads``
-    query heads.
-    """
+    """(B, n_kv, T, Dh) -> (B, n_kv * n_rep, T, Dh). n_rep is 1 for MHA."""
     if n_rep == 1:
         return x
     batch, n_kv, seq, head_dim = x.shape
@@ -34,21 +22,7 @@ def repeat_kv(x: torch.Tensor, n_rep: int) -> torch.Tensor:
 
 
 class CausalSelfAttention(nn.Module):
-    """Causal self-attention supporting MHA and GQA, with optional RoPE.
-
-    Tensor flow::
-
-        x:          (B, T, C)
-        q:          (B, Hq, T, Dh)
-        k, v:       (B, Hkv, T, Dh)  — repeated to Hq for GQA
-        scores:     (B, Hq, T, T) with causal mask
-        out:        (B, T, C)
-
-    Constraints:
-    - ``num_heads`` must be divisible by ``num_kv_heads``
-    - MHA is the special case ``num_kv_heads == num_heads``
-    """
-
+    # Q: (B, num_heads, T, Dh). K/V start with num_kv_heads and are repeated up to match.
     def __init__(
         self,
         hidden_size: int,
@@ -86,7 +60,7 @@ class CausalSelfAttention(nn.Module):
         self.attn_dropout = nn.Dropout(dropout)
         self.resid_dropout = nn.Dropout(dropout)
 
-        # Causal mask: True means "allowed to attend".
+        # True means the query is allowed to see that key
         mask = torch.tril(torch.ones(max_seq_len, max_seq_len, dtype=torch.bool))
         self.register_buffer("causal_mask", mask, persistent=False)
 
@@ -99,7 +73,7 @@ class CausalSelfAttention(nn.Module):
             self.rotary = None
 
     def _shape_heads(self, x: torch.Tensor, num_heads: int) -> torch.Tensor:
-        """(B, T, H*Dh) -> (B, H, T, Dh)."""
+        # (B, T, H*Dh) -> (B, H, T, Dh)
         batch, seq, _ = x.shape
         x = x.view(batch, seq, num_heads, self.head_dim)
         return x.transpose(1, 2)
@@ -122,7 +96,6 @@ class CausalSelfAttention(nn.Module):
             q = apply_rotary_emb(q, cos, sin)
             k = apply_rotary_emb(k, cos, sin)
 
-        # Expand KV heads to match query heads for GQA (no-op for MHA).
         k = repeat_kv(k, self.num_queries_per_kv)
         v = repeat_kv(v, self.num_queries_per_kv)
 
@@ -149,7 +122,6 @@ def build_attention(
     use_rope: bool = False,
     rope_base: float = 10000.0,
 ) -> nn.Module:
-    """Construct an attention module by config name."""
     kind = kind.lower()
     if kind not in ATTN_VARIANTS:
         raise ValueError(f"Unknown attention variant {kind!r}; expected one of {ATTN_VARIANTS}")

@@ -1,4 +1,4 @@
-# Mini end-to-end run for Phase 4 gate (smoke data + tiny model + few steps)
+# Short CPU run: smoke corpus, tiny model, few steps.
 includes:
   - configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml
   - configs/model/mini.yaml

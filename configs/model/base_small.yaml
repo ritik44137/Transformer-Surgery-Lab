@@ -1,5 +1,4 @@
-# Small baseline model for local / Colab / Kaggle iteration
-# Classical stack: LayerNorm + sinusoidal + ReLU + MHA
+# Small classical model: LayerNorm, sinusoidal, ReLU, MHA. Fine for a laptop.
 
 model:
   vocab_size: 8000

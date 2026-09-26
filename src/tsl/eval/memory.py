@@ -1,4 +1,4 @@
-"""Peak memory helpers with CUDA support and CPU fallback."""
+"""CUDA peak memory. On CPU the number is just missing."""
 
 from __future__ import annotations
 
@@ -8,7 +8,6 @@ import torch
 
 
 def reset_peak_memory(device: torch.device | None = None) -> None:
-    """Reset CUDA peak memory stats when available."""
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device.type == "cuda" and torch.cuda.is_available():
@@ -17,7 +16,6 @@ def reset_peak_memory(device: torch.device | None = None) -> None:
 
 
 def peak_memory_mb(device: torch.device | None = None) -> float | None:
-    """Return CUDA peak allocated memory in MiB, or ``None`` on CPU."""
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device.type != "cuda" or not torch.cuda.is_available():
@@ -30,7 +28,6 @@ def measure_peak_memory(
     *,
     device: torch.device,
 ) -> dict[str, Any]:
-    """Run *fn* and report peak CUDA memory (CPU returns a graceful stub)."""
     if device.type != "cuda" or not torch.cuda.is_available():
         result = fn()
         return {

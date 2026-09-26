@@ -1,4 +1,4 @@
-"""Parameter counting helpers (dashboard-friendly)."""
+"""Count parameters once when the embedding and lm_head share a tensor."""
 
 from __future__ import annotations
 
@@ -8,7 +8,6 @@ import torch.nn as nn
 
 
 def count_parameters(model: nn.Module) -> dict[str, Any]:
-    """Return total / trainable parameter counts, de-duplicating tied weights."""
     seen: set[int] = set()
     total = 0
     trainable = 0

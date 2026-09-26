@@ -1,4 +1,4 @@
-"""Plotly chart builders tuned for the dark NeuralAI-style dashboard."""
+"""Plotly figures. Colors match the dark theme in components.py."""
 
 from __future__ import annotations
 
@@ -9,7 +9,6 @@ import plotly.graph_objects as go
 from dashboard.loaders import loss_series
 from dashboard.metrics import short_run_name
 
-# Palette matching references/Dashboard.jpg
 PURPLE = "#8b5cf6"
 PURPLE_SOFT = "#a78bfa"
 CYAN = "#22d3ee"
@@ -53,7 +52,6 @@ def _base_layout(title: str | None = None, height: int = 320) -> dict[str, Any]:
 
 
 def loss_curves_figure(bundles: list[dict[str, Any]], *, mode: str = "train") -> go.Figure:
-    """Overlay train or eval loss curves for selected runs."""
     fig = go.Figure()
     for i, b in enumerate(bundles):
         series = loss_series(b)
@@ -127,7 +125,7 @@ def bar_metric_figure(
 
 
 def _padded_axis(values: list[float], pad_frac: float = 0.18) -> dict[str, Any]:
-    """Explicit axis range with breathing room; double-click resets back to it."""
+    # fixed range so double-click reset doesn't snap back to Plotly's autorange
     lo, hi = min(values), max(values)
     span = hi - lo
     pad = span * pad_frac if span else (abs(hi) * 0.05 or 1.0)
@@ -194,7 +192,6 @@ def throughput_vs_params_figure(bundles: list[dict[str, Any]]) -> go.Figure:
 
 
 def run_color(index: int) -> str:
-    """Palette entry a run keeps across every chart and the model picker."""
     return PALETTE[index % len(PALETTE)]
 
 
@@ -205,9 +202,8 @@ def _rgba(hex_color: str, alpha: float) -> str:
 
 
 def variant_radar_figure(bundle: dict[str, Any], *, color: str = PURPLE) -> go.Figure:
-    """Simple normalized radar for one run (relative visual, not absolute scores)."""
+    # scores are scaled for the chart only; don't treat them as metrics
     row = bundle.get("comparison") or {}
-    # Normalize rough desirability proxies for display only.
     loss = row.get("best_val_loss")
     tok = row.get("tokens_per_sec")
     lat = row.get("forward_latency_ms")

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train a Transformer Surgery Lab experiment from YAML config(s)."""
+"""Train from one or more YAML configs. Later files override earlier ones."""
 
 from __future__ import annotations
 
@@ -53,7 +53,6 @@ def _resolve_device(choice: str):
 
 
 def _sync_vocab_from_tokenizer(cfg: dict) -> None:
-    """Align model.vocab_size with the frozen tokenizer when available."""
     tok_dir = cfg.get("data", {}).get("tokenizer_dir")
     if not tok_dir:
         return
@@ -65,7 +64,7 @@ def _sync_vocab_from_tokenizer(cfg: dict) -> None:
     cfg.setdefault("model", {})["vocab_size"] = vocab
     logger.info("Synced model.vocab_size=%d from tokenizer", vocab)
 
-    # Keep attention PE buffers large enough for configured sequence length.
+    # PE buffers are sized from max_seq_len; don't let data.seq_len exceed that
     seq_len = int(cfg.get("data", {}).get("seq_len", 256))
     model_max = int(cfg["model"].get("max_seq_len", seq_len))
     if model_max < seq_len:

@@ -1,13 +1,9 @@
-# Official experiment grid for Transformer Surgery Lab
+# List of experiment configs. This file is not passed to train.py.
 #
-# This is a *manifest*, not a training config. It documents which experiment
-# YAML files form the primary comparison story vs optional follow-ups.
-#
-# Launch any run with:
 #   python scripts/train.py --config configs/experiments/<name>.yaml
 
 grid:
-  # ---- Primary comparison story (run these first) ----
+  # one change at a time, against the classical baseline
   primary:
     - name: baseline_classical
       config: configs/experiments/baseline_layernorm_sinusoidal_relu_mha.yaml
@@ -34,7 +30,7 @@ grid:
       variants: {norm: layernorm, positional: sinusoidal, feedforward: relu, attention: gqa}
       role: single-axis — attention only
 
-  # ---- Synthesis / second tier (after primary is stable) ----
+  # all four swaps together, after the single-axis runs
   synthesis:
     - name: modern_stack
       config: configs/experiments/rmsnorm_rope_swiglu_gqa.yaml

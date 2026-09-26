@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Transformer Surgery Lab — Streamlit experiment dashboard.
-
-Visual language matches references/Dashboard.jpg: dark navy canvas,
-purple accents, rounded KPI cards, loss panel, and run tiles.
-"""
+"""Streamlit view over runs/: loss curves, benchmarks, variant cards."""
 
 from __future__ import annotations
 

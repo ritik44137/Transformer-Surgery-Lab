@@ -1,8 +1,4 @@
-"""Config-driven model construction.
-
-Variant selection is explicit if/elif — no registry magic — so the factory
-stays easy to explain and debug in an interview.
-"""
+"""Assemble a DecoderLM from a config dict."""
 
 from __future__ import annotations
 
@@ -30,19 +26,14 @@ logger = get_logger(__name__)
 
 
 def _model_section(cfg: Mapping[str, Any]) -> dict[str, Any]:
-    """Accept either a full resolved config or a bare ``model`` mapping."""
+    # either the whole resolved config, or just the model mapping
     if "model" in cfg and isinstance(cfg["model"], Mapping):
         return dict(cfg["model"])
     return dict(cfg)
 
 
 def build_model(cfg: Mapping[str, Any]) -> DecoderLM:
-    """Build a :class:`DecoderLM` from a resolved config.
-
-    Required model keys: ``vocab_size``, ``hidden_size``, ``num_layers``,
-    ``num_heads``, ``d_ff``, ``max_seq_len``. Variant keys default to the
-    classical baseline (LayerNorm / sinusoidal / ReLU / MHA).
-    """
+    """Missing variant keys fall back to LayerNorm / sinusoidal / ReLU / MHA."""
     m = _model_section(cfg)
 
     vocab_size = int(m["vocab_size"])

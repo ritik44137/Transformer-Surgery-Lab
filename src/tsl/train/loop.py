@@ -1,4 +1,4 @@
-"""Single train/eval step helpers."""
+"""One train step and a mean-loss pass over a loader."""
 
 from __future__ import annotations
 
@@ -21,7 +21,6 @@ def train_step(
     lr: float,
     grad_clip: float | None = 1.0,
 ) -> dict[str, float]:
-    """One optimizer step. Returns metrics including loss and tokens/sec."""
     model.train()
     set_optimizer_lr(optimizer, lr)
 
@@ -53,7 +52,6 @@ def eval_step(
     *,
     device: torch.device,
 ) -> dict[str, float]:
-    """Evaluate loss on one batch (no grad)."""
     model.eval()
     input_ids = batch["input_ids"].to(device)
     labels = batch["labels"].to(device)
@@ -70,7 +68,6 @@ def evaluate_loader(
     device: torch.device,
     max_batches: int | None = None,
 ) -> dict[str, float]:
-    """Mean validation loss (and perplexity) over a loader."""
     model.eval()
     total_loss = 0.0
     n = 0
@@ -83,6 +80,6 @@ def evaluate_loader(
     if n == 0:
         raise RuntimeError("Validation loader produced zero batches")
     mean_loss = total_loss / n
-    # Cap for numerical safety when loss is huge early in training.
+    # exp(huge loss) overflows; cap before converting to perplexity
     ppl = float(torch.exp(torch.tensor(min(mean_loss, 20.0))).item())
     return {"val_loss": mean_loss, "perplexity": ppl}

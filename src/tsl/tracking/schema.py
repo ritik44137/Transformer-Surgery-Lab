@@ -1,8 +1,4 @@
-"""Canonical artifact shapes for experiment tracking.
-
-These helpers build plain dicts (JSON/JSONL friendly) rather than heavy
-schema frameworks — easy to explain and easy for the dashboard to consume.
-"""
+"""Dicts written into a run directory (metadata, metrics rows, summary, benchmark)."""
 
 from __future__ import annotations
 
@@ -20,7 +16,6 @@ def make_metadata(
     model_variants: Mapping[str, str],
     extra: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Run-level metadata written once at start."""
     meta: dict[str, Any] = {
         "run_name": run_name,
         "seed": seed,
@@ -42,7 +37,6 @@ def make_train_metrics(
     tokens_per_sec: float | None = None,
     extra: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """One train JSONL row."""
     row: dict[str, Any] = {
         "step": int(step),
         "loss": float(loss),
@@ -62,7 +56,6 @@ def make_eval_metrics(
     perplexity: float | None = None,
     extra: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """One eval JSONL row."""
     row: dict[str, Any] = {
         "step": int(step),
         "val_loss": float(val_loss),
@@ -85,7 +78,6 @@ def make_summary(
     model_variants: Mapping[str, str],
     extra: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Compact end-of-run summary for comparison tooling."""
     summary: dict[str, Any] = {
         "run_name": run_name,
         "best_val_loss": best_val_loss,
@@ -111,7 +103,6 @@ def make_benchmark(
     peak_memory_mb: float | None = None,
     extra: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Benchmark artifact shape (params, throughput, latency, memory)."""
     out: dict[str, Any] = {"param_count": int(param_count)}
     if tokens_per_sec is not None:
         out["tokens_per_sec"] = float(tokens_per_sec)

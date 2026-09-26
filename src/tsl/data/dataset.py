@@ -1,4 +1,4 @@
-"""Causal language modeling dataset over a flat token array."""
+"""Non-overlapping next-token windows over a flat token array."""
 
 from __future__ import annotations
 
@@ -10,15 +10,7 @@ from torch.utils.data import Dataset
 
 
 class CausalLMDataset(Dataset):
-    """Fixed-length next-token prediction windows.
-
-    Given a 1D token array ``T``, sample ``i`` returns::
-
-        input  = T[i * seq_len : i * seq_len + seq_len]
-        target = T[i * seq_len + 1 : i * seq_len + seq_len + 1]
-
-    Windows are non-overlapping for simple, efficient packing.
-    """
+    """Window i is tokens[i*seq_len : i*seq_len + seq_len + 1], split into input and label."""
 
     def __init__(self, tokens: np.ndarray | torch.Tensor, seq_len: int) -> None:
         if seq_len < 1:
@@ -55,6 +47,5 @@ class CausalLMDataset(Dataset):
 
 
 def load_causal_dataset(path: str | Path, seq_len: int) -> CausalLMDataset:
-    """Load a ``.npy`` token file into a :class:`CausalLMDataset`."""
     tokens = np.load(path)
     return CausalLMDataset(tokens, seq_len=seq_len)

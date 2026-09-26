@@ -1,4 +1,4 @@
-"""Pre-norm transformer block with injected submodules."""
+"""Pre-norm block. The factory passes in the norm, attention, and MLP."""
 
 from __future__ import annotations
 
@@ -7,11 +7,6 @@ import torch.nn as nn
 
 
 class TransformerBlock(nn.Module):
-    """Pre-norm decoder block: Norm → Attn → +res, then Norm → FFN → +res.
-
-    Submodules are injected so architecture swaps never require editing this file.
-    """
-
     def __init__(
         self,
         norm_attn: nn.Module,
@@ -26,8 +21,6 @@ class TransformerBlock(nn.Module):
         self.feedforward = feedforward
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # Attention sublayer with residual
         x = x + self.attention(self.norm_attn(x))
-        # Feed-forward sublayer with residual
         x = x + self.feedforward(self.norm_ff(x))
         return x

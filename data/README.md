@@ -19,12 +19,6 @@ data/
    - Local smoke path (no HF download): `python scripts/prepare_data.py --config configs/default.yaml configs/data/smoke.yaml`
 3. Training scripts read from `data/processed/` and `data/tokenizer/` via config paths.
 
-## Experiment policy
+Use the same tokenizer and the same TinyStories split for every architecture comparison. `data/raw/smoke/` is only there to check the pipeline.
 
-- **One fixed tokenizer** across all architecture comparisons.
-- **One fixed dataset family** (TinyStories) for main comparison runs.
-- A separate tiny smoke-test corpus lives under `data/raw/smoke/` for pipeline validation.
-
-## Git ignore rules
-
-See root `.gitignore`. Never commit large raw downloads, tokenized shards, or checkpoints.
+Raw downloads, token arrays, and the tokenizer json are gitignored. See the root `.gitignore`.

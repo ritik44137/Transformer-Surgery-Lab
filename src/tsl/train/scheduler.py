@@ -1,4 +1,4 @@
-"""Learning-rate schedule: linear warmup + optional cosine decay."""
+"""Linear warmup, then cosine or a flat LR."""
 
 from __future__ import annotations
 
@@ -14,19 +14,13 @@ def build_lr_scheduler(
     schedule: str = "cosine",
     min_lr_ratio: float = 0.1,
 ) -> Callable[[int], float]:
-    """Return a function ``step -> lr``.
-
-    ``schedule``:
-      - ``cosine``: linear warmup then cosine decay to ``min_lr_ratio * lr``
-      - ``constant``: linear warmup then constant ``learning_rate``
-    """
+    """step is 1-indexed. cosine decays to min_lr_ratio * learning_rate."""
     warmup_steps = max(0, int(warmup_steps))
     max_steps = max(1, int(max_steps))
     schedule = schedule.lower()
     min_lr = learning_rate * min_lr_ratio
 
     def lr_at(step: int) -> float:
-        # step is 1-indexed from the trainer after each optimizer step.
         if step < 1:
             step = 1
         if warmup_steps > 0 and step <= warmup_steps:
@@ -45,6 +39,5 @@ def build_lr_scheduler(
 
 
 def set_optimizer_lr(optimizer, lr: float) -> None:
-    """Write *lr* into every param group."""
     for group in optimizer.param_groups:
         group["lr"] = lr

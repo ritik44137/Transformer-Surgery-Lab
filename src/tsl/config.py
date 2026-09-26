@@ -1,13 +1,4 @@
-"""YAML config loading and deep-merge for Transformer Surgery Lab.
-
-Design goals:
-- load a base config and one or more override configs
-- deep-merge nested dicts (later overrides win)
-- lightly validate required top-level sections
-- return a plain dict that is easy to save back out
-
-This intentionally avoids frameworks so it stays whiteboard-explainable.
-"""
+"""YAML load + deep merge. Later files override earlier ones."""
 
 from __future__ import annotations
 
@@ -20,14 +11,13 @@ from tsl.constants import REQUIRED_CONFIG_SECTIONS
 
 
 class ConfigError(ValueError):
-    """Raised when a config file is missing, invalid, or incomplete."""
+    pass
 
 
 def _deep_merge(
     base: MutableMapping[str, Any],
     override: Mapping[str, Any],
 ) -> MutableMapping[str, Any]:
-    """Recursively merge *override* into *base* (in place)."""
     for key, value in override.items():
         if (
             key in base
@@ -41,7 +31,6 @@ def _deep_merge(
 
 
 def load_yaml(path: str | Path) -> dict[str, Any]:
-    """Load a single YAML file into a dict."""
     path = Path(path)
     if not path.is_file():
         raise ConfigError(f"Config file not found: {path}")
@@ -55,7 +44,6 @@ def load_yaml(path: str | Path) -> dict[str, Any]:
 
 
 def save_yaml(data: Mapping[str, Any], path: str | Path) -> None:
-    """Write a mapping to YAML."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
@@ -69,7 +57,6 @@ def save_yaml(data: Mapping[str, Any], path: str | Path) -> None:
 
 
 def validate_config(cfg: Mapping[str, Any], sections: Sequence[str] | None = None) -> None:
-    """Ensure required top-level sections exist."""
     required = sections if sections is not None else REQUIRED_CONFIG_SECTIONS
     missing = [s for s in required if s not in cfg]
     if missing:
@@ -81,12 +68,10 @@ def load_config(
     validate: bool = True,
     required_sections: Sequence[str] | None = None,
 ) -> dict[str, Any]:
-    """Load and deep-merge one or more YAML configs.
+    """Merge one or more YAML files.
 
-    Earlier files are the base; later files override. Each file may declare
-    an ``includes`` list of paths that are merged first (depth-first)::
-
-        cfg = load_config("configs/experiments/baseline_....yaml")
+    Each file may list ``includes``; those are merged first, depth-first.
+    ``includes`` itself is dropped from the dict you get back.
     """
     if not paths:
         raise ConfigError("load_config requires at least one config path")
@@ -95,7 +80,6 @@ def load_config(
     for path in paths:
         _merge_file(merged, Path(path), seen=set())
 
-    # includes is a load-time directive, not part of the runtime config.
     merged.pop("includes", None)
 
     if validate:
@@ -109,7 +93,6 @@ def _merge_file(
     *,
     seen: set[Path],
 ) -> None:
-    """Merge *path* (and its includes) into *merged*."""
     path = path.resolve()
     if path in seen:
         raise ConfigError(f"Circular config include detected: {path}")
@@ -124,7 +107,7 @@ def _merge_file(
     for inc in includes:
         inc_path = Path(inc)
         if not inc_path.is_absolute():
-            # Resolve relative to repo-style paths from CWD first, then file dir.
+            # try CWD first so experiment YAMLs can include configs/... from the repo root
             cwd_candidate = Path.cwd() / inc_path
             file_candidate = base_dir / inc_path
             if cwd_candidate.is_file():
@@ -143,7 +126,6 @@ def resolve_config(
     overrides: Sequence[str | Path] | None = None,
     validate: bool = True,
 ) -> dict[str, Any]:
-    """Convenience wrapper: merge *base* with optional override paths."""
     paths: list[str | Path] = [base]
     if overrides:
         paths.extend(overrides)

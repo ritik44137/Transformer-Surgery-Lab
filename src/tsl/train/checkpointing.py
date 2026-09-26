@@ -1,4 +1,4 @@
-"""Checkpoint save/load helpers."""
+"""checkpoint_latest.pt and checkpoint_best.pt under the run dir."""
 
 from __future__ import annotations
 
@@ -33,7 +33,6 @@ def save_checkpoint(
     config: dict[str, Any] | None = None,
     extra: dict[str, Any] | None = None,
 ) -> Path:
-    """Save a checkpoint dict to *path*."""
     path = Path(path)
     ensure_dir(path.parent)
     payload: dict[str, Any] = {
@@ -58,7 +57,6 @@ def load_checkpoint(
     optimizer: torch.optim.Optimizer | None = None,
     map_location: str | torch.device = "cpu",
 ) -> dict[str, Any]:
-    """Load a checkpoint; optionally restore model/optimizer in place."""
     path = Path(path)
     if not path.is_file():
         raise FileNotFoundError(f"Checkpoint not found: {path}")

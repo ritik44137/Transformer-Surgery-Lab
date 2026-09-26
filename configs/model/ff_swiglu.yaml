@@ -1,4 +1,4 @@
-# Fragment: select SwiGLU with ~param-parity d_ff scaling
+# SwiGLU, inner width scaled so the param count stays near the ReLU MLP.
 model:
   feedforward: swiglu
   swiglu_scale_for_param_parity: true

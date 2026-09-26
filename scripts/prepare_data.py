@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare dataset and tokenizer artifacts for Transformer Surgery Lab."""
+"""Train or load the tokenizer and write data/processed token arrays."""
 
 from __future__ import annotations
 

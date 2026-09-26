@@ -1,5 +1,3 @@
-"""Model subpackage exports."""
-
 from tsl.model.factory import build_model
 from tsl.model.transformer import DecoderLM
 

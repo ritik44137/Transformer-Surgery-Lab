@@ -1,4 +1,4 @@
-"""Causal language modeling loss."""
+"""Next-token cross-entropy. Labels are already shifted by the dataset."""
 
 from __future__ import annotations
 
@@ -7,21 +7,6 @@ import torch.nn.functional as F
 
 
 def causal_lm_loss(logits: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
-    """Cross-entropy over next-token predictions.
-
-    Parameters
-    ----------
-    logits:
-        Model output of shape ``(batch, seq, vocab)``.
-    labels:
-        Target token ids of shape ``(batch, seq)``, already shifted so that
-        ``labels[t]`` is the token that should be predicted from position ``t``.
-        The dataset produces this alignment; this function does **not** shift.
-
-    Returns
-    -------
-    Scalar mean cross-entropy loss.
-    """
     if logits.ndim != 3:
         raise ValueError(f"logits must be (B, T, V), got {tuple(logits.shape)}")
     if labels.ndim != 2:

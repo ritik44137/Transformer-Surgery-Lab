@@ -1,4 +1,4 @@
-# Ultra-short training settings for Phase 4 gate / local smoke
+# A few steps. Used by the mini CPU configs.
 
 train:
   max_steps: 20

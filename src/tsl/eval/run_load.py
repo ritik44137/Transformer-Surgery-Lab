@@ -1,4 +1,4 @@
-"""Shared helpers to rebuild a trained model from a run directory."""
+"""Rebuild a model from a run directory's resolved config and a checkpoint."""
 
 from __future__ import annotations
 
@@ -25,10 +25,6 @@ def load_run_model(
     device: torch.device | None = None,
     prefer_cuda: bool = True,
 ) -> tuple[nn.Module, dict[str, Any], Path]:
-    """Load resolved config + model weights from a run directory.
-
-    Returns ``(model, cfg, checkpoint_path)``.
-    """
     run_dir = Path(run_dir)
     cfg_path = run_dir / CONFIG_RESOLVED_FILENAME
     if not cfg_path.is_file():
@@ -48,7 +44,6 @@ def load_run_model(
     else:
         ckpt_path = run_dir / ckpt_name
         if not ckpt_path.is_file() and checkpoint == "best":
-            # Fall back to latest if best was never written.
             alt = run_dir / CHECKPOINT_LATEST
             if alt.is_file():
                 logger.warning("best checkpoint missing; using latest")

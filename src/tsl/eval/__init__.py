@@ -1,5 +1,3 @@
-"""Evaluation subpackage exports."""
-
 from tsl.eval.generation import generate, generate_text
 from tsl.eval.latency import measure_forward_latency, measure_generation_latency
 from tsl.eval.memory import measure_peak_memory, peak_memory_mb, reset_peak_memory

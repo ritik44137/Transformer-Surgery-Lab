@@ -1,10 +1,10 @@
-"""Dataset preparation: load text, tokenize, split, and save artifacts."""
+"""Turn raw text into a frozen tokenizer plus flat train/val token arrays."""
 
 from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Any, Sequence
 
 import numpy as np
 
@@ -26,7 +26,6 @@ logger = get_logger(__name__)
 
 
 def normalize_text(text: str) -> str:
-    """Light whitespace normalization; preserves content."""
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     text = re.sub(r"[ \t]+", " ", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
@@ -34,7 +33,6 @@ def normalize_text(text: str) -> str:
 
 
 def load_texts_from_dir(raw_dir: str | Path, *, pattern: str = "*.txt") -> list[str]:
-    """Load and normalize all matching text files under *raw_dir*."""
     raw_dir = Path(raw_dir)
     if not raw_dir.is_dir():
         raise FileNotFoundError(f"Raw data directory not found: {raw_dir}")
@@ -46,7 +44,7 @@ def load_texts_from_dir(raw_dir: str | Path, *, pattern: str = "*.txt") -> list[
     texts: list[str] = []
     for path in paths:
         content = path.read_text(encoding="utf-8", errors="replace")
-        # Split on blank lines into story-like documents when possible.
+        # blank line = new document, when the file is a pile of stories
         chunks = [normalize_text(c) for c in re.split(r"\n\s*\n", content)]
         texts.extend(c for c in chunks if c)
     logger.info("Loaded %d text documents from %s", len(texts), raw_dir)
@@ -61,7 +59,6 @@ def load_texts_from_hf(
     max_texts: int | None = None,
     seed: int = 42,
 ) -> list[str]:
-    """Load texts from a HuggingFace datasets identifier."""
     from datasets import load_dataset
 
     logger.info("Loading HuggingFace dataset %s (split=%s)", dataset_name, split)
@@ -73,8 +70,7 @@ def load_texts_from_hf(
     for row in ds:
         value = row.get(text_column)
         if value is None:
-            # TinyStories sometimes uses 'story'
-            value = row.get("story")
+            value = row.get("story")  # TinyStories
         if not value:
             continue
         texts.append(normalize_text(str(value)))
@@ -83,13 +79,12 @@ def load_texts_from_hf(
 
 
 def load_texts(cfg: dict[str, Any]) -> list[str]:
-    """Resolve texts from config: prefer local raw files, else HuggingFace."""
+    """Local .txt files if raw_dir has any, otherwise the HF dataset in the config."""
     data = cfg.get("data", cfg)
     raw_dir = Path(data.get("raw_dir", "data/raw"))
     max_texts = data.get("max_texts")
     seed = int(data.get("seed", cfg.get("run", {}).get("seed", 42)))
 
-    # Local override / smoke path
     if raw_dir.is_dir() and any(raw_dir.rglob("*.txt")):
         texts = load_texts_from_dir(raw_dir)
         if max_texts is not None:
@@ -114,13 +109,12 @@ def texts_to_token_ids(
     texts: Sequence[str],
     tokenizer,
 ) -> np.ndarray:
-    """Concatenate documents into one flat int32 token array (EOS-separated)."""
     eos_id = tokenizer.token_to_id(EOS_TOKEN)
     ids: list[int] = []
     for text in texts:
         piece = encode(tokenizer, text, add_special_tokens=True)
         ids.extend(piece)
-        # TemplateProcessing already adds EOS; avoid double-EOS when missing.
+        # post-processor usually already appended EOS
         if eos_id is not None and (not piece or piece[-1] != eos_id):
             ids.append(eos_id)
     if not ids:
@@ -134,10 +128,9 @@ def split_tokens(
     train_split: float = 0.95,
     seed: int = 42,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Contiguous train/val split on the flat token stream."""
     if not 0.0 < train_split < 1.0:
         raise ValueError(f"train_split must be in (0, 1), got {train_split}")
-    # Contiguous split keeps document boundaries roughly intact vs shuffling IDs.
+    # cut the stream in place; shuffling token ids would split documents mid-way
     n = len(tokens)
     cut = max(1, int(n * train_split))
     if cut >= n:
@@ -160,7 +153,6 @@ def save_processed(
     *,
     meta: dict[str, Any] | None = None,
 ) -> dict[str, Path]:
-    """Write train/val token arrays and metadata under *processed_dir*."""
     processed_dir = ensure_dir(processed_dir)
     train_path = processed_dir / TRAIN_TOKENS_FILENAME
     val_path = processed_dir / VAL_TOKENS_FILENAME
@@ -185,10 +177,6 @@ def save_processed(
 
 
 def prepare_dataset(cfg: dict[str, Any], *, force_retrain_tokenizer: bool = False) -> dict[str, Any]:
-    """End-to-end preparation driven by a resolved config dict.
-
-    Returns paths and summary metadata.
-    """
     data = cfg.get("data", cfg)
     seed = int(data.get("seed", cfg.get("run", {}).get("seed", 42)))
     set_seed(seed)
@@ -197,7 +185,6 @@ def prepare_dataset(cfg: dict[str, Any], *, force_retrain_tokenizer: bool = Fals
     tokenizer_dir = data.get("tokenizer_dir", "data/tokenizer")
     vocab_size = int(data.get("vocab_size", 8000))
 
-    # Train tokenizer on the same corpus we will encode (or load frozen artifact).
     tokenizer = get_or_train_tokenizer(
         texts,
         tokenizer_dir,
@@ -239,7 +226,6 @@ def prepare_dataset(cfg: dict[str, Any], *, force_retrain_tokenizer: bool = Fals
 
 
 def load_token_array(path: str | Path) -> np.ndarray:
-    """Load a ``.npy`` token array."""
     arr = np.load(path)
     if arr.ndim != 1:
         raise ValueError(f"Expected 1D token array, got shape {arr.shape} from {path}")

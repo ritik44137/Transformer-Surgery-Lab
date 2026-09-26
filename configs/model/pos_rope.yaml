@@ -1,4 +1,4 @@
-# Fragment: select RoPE (no additive sinusoidal PE)
+# RoPE. No additive positional encoding.
 model:
   positional: rope
   rope_base: 10000.0

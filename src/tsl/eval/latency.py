@@ -1,4 +1,4 @@
-"""Forward and generation latency benchmarks."""
+"""Mean/median forward and generation latency, in ms."""
 
 from __future__ import annotations
 
@@ -39,7 +39,6 @@ def measure_forward_latency(
     num_warmup: int = 3,
     num_iters: int = 20,
 ) -> dict[str, Any]:
-    """Time a single forward pass; report mean/median latency in ms."""
     model.eval()
     model.to(device)
     ids = torch.randint(0, vocab_size, (batch_size, seq_len), device=device)
@@ -78,7 +77,6 @@ def measure_generation_latency(
     num_warmup: int = 2,
     num_iters: int = 10,
 ) -> dict[str, Any]:
-    """Time short autoregressive generation; report mean latency in ms."""
     model.eval()
     model.to(device)
     prompt = torch.randint(0, vocab_size, (1, prompt_len), device=device)

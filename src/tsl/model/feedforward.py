@@ -1,19 +1,10 @@
-"""Feed-forward / MLP blocks.
+"""ReLU MLP and SwiGLU.
 
-Swap axis: ReLU MLP (baseline) vs SwiGLU (Phase 5).
-
-Parameterization policy (fair comparison)
------------------------------------------
-A ReLU MLP has two projections: ``hidden → d_ff → hidden`` (~ ``2 * H * d_ff`` params).
-SwiGLU has three: gate, up, and down (~ ``3 * H * d_ff_eff`` params).
-
-By default ``scale_for_param_parity=True`` sets::
-
-    d_ff_eff = round(2/3 * d_ff)
-
-so SwiGLU stays roughly parameter-matched to the ReLU baseline using the same
-config ``d_ff``. Set ``scale_for_param_parity=False`` to keep ``d_ff`` fixed and
-accept a larger SwiGLU (then report param counts explicitly in summaries).
+SwiGLU has a gate, an up projection, and a down projection, so three
+matrices against the ReLU block's two. With scale_for_param_parity (the
+default) the inner width is round(2/3 * d_ff), bumped to even, so the
+param count stays near the ReLU MLP that used the same d_ff. Turn the
+flag off to keep d_ff exactly and live with the extra parameters.
 """
 
 from __future__ import annotations
@@ -26,12 +17,6 @@ from tsl.constants import FF_RELU, FF_SWIGLU, FF_VARIANTS
 
 
 class ReLUFeedForward(nn.Module):
-    """Two-layer MLP with ReLU: ``hidden -> d_ff -> hidden``.
-
-    Expected input shape: ``(batch, seq, hidden_size)``
-    Output shape: same as input.
-    """
-
     def __init__(self, hidden_size: int, d_ff: int, dropout: float = 0.0) -> None:
         super().__init__()
         self.hidden_size = hidden_size
@@ -50,12 +35,6 @@ class ReLUFeedForward(nn.Module):
 
 
 class SwiGLUFeedForward(nn.Module):
-    """SwiGLU MLP: ``silu(gate(x)) * up(x)``, then down-project.
-
-    Expected input shape: ``(batch, seq, hidden_size)``
-    Output shape: same as input.
-    """
-
     def __init__(
         self,
         hidden_size: int,
@@ -66,10 +45,9 @@ class SwiGLUFeedForward(nn.Module):
     ) -> None:
         super().__init__()
         self.hidden_size = hidden_size
-        # See module docstring for the 2/3 scaling rationale.
         if scale_for_param_parity:
             d_ff_eff = max(hidden_size, int(round(2 * d_ff / 3)))
-            # Keep even for friendlier kernel shapes.
+            # even width; some kernels dislike odd sizes
             d_ff_eff = d_ff_eff + (d_ff_eff % 2)
         else:
             d_ff_eff = d_ff
@@ -95,7 +73,6 @@ def build_feedforward(
     *,
     scale_for_param_parity: bool = True,
 ) -> nn.Module:
-    """Construct a feed-forward block by config name."""
     kind = kind.lower()
     if kind not in FF_VARIANTS:
         raise ValueError(f"Unknown feedforward variant {kind!r}; expected one of {FF_VARIANTS}")

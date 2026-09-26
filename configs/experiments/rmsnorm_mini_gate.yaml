@@ -1,4 +1,4 @@
-# Mini RMSNorm swap for Phase 6 compare_runs gate
+# Same budget as baseline_mini_gate, RMSNorm instead of LayerNorm.
 includes:
   - configs/experiments/rmsnorm_sinusoidal_relu_mha.yaml
   - configs/model/mini.yaml

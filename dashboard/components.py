@@ -1,4 +1,4 @@
-"""Reusable Streamlit UI fragments matching the dark dashboard reference."""
+"""HTML bits for the Streamlit page. Most of the look is the CSS blob below."""
 
 from __future__ import annotations
 
@@ -503,10 +503,6 @@ def render_model_picker(
     *,
     state_key: str = "focus_run",
 ) -> int:
-    """Legend-style run picker: colored dot per run, dimmed unless selected.
-
-    Returns the index of the selected bundle.
-    """
     n = len(bundles)
     current = min(int(st.session_state.get(state_key, 0)), n - 1)
 

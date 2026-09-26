@@ -1,4 +1,4 @@
-"""Config-driven dataloaders over processed token artifacts."""
+"""Train and val loaders from the processed .npy files."""
 
 from __future__ import annotations
 
@@ -15,8 +15,6 @@ logger = get_logger(__name__)
 
 
 class DataModule:
-    """Thin wrapper that builds train/val datasets and dataloaders from config."""
-
     def __init__(self, cfg: dict[str, Any]) -> None:
         self.cfg = cfg
         data = cfg.get("data", {})
@@ -32,7 +30,6 @@ class DataModule:
         self.val_dataset: CausalLMDataset | None = None
 
     def setup(self) -> None:
-        """Load processed token arrays into datasets."""
         train_path = self.processed_dir / TRAIN_TOKENS_FILENAME
         val_path = self.processed_dir / VAL_TOKENS_FILENAME
         if not train_path.is_file():
@@ -81,7 +78,6 @@ class DataModule:
 
 
 def build_dataloaders(cfg: dict[str, Any]) -> tuple[DataLoader, DataLoader]:
-    """Convenience: return ``(train_loader, val_loader)`` from config."""
     dm = DataModule(cfg)
     dm.setup()
     return dm.train_dataloader(), dm.val_dataloader()

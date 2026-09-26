@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Post-training evaluation: val metrics + optional text samples."""
+"""Val loss on a saved run, and an optional text sample."""
 
 from __future__ import annotations
 

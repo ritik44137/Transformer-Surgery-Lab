@@ -1,6 +1,6 @@
 # Transformer Surgery Lab
 
-A config-driven PyTorch lab for **controlled transformer architecture experiments**. Swap one component at a time — or compare full classical vs modern stacks — and measure the tradeoffs with reproducible runs and a Streamlit dashboard.
+PyTorch lab for swapping one transformer piece at a time (norm, positions, MLP, attention) and comparing the runs. Configs live in `configs/experiments/`. The Streamlit app plots loss curves and the benchmark numbers.
 
 ### Four comparison axes
 

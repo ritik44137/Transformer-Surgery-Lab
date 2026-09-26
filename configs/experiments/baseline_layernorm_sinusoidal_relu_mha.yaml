@@ -13,12 +13,11 @@ run:
   output_dir: runs
 
 model:
-  # Keep classical stack explicit even when defaults already match.
+  # written out so a diff against a swap config shows the one change
   norm: layernorm
   positional: sinusoidal
   feedforward: relu
   attention: mha
 
-# NOTE: This scaffold uses the local smoke corpus so the baseline path is
-# immediately runnable. Swap data include to configs/data/tinystories.yaml
-# after `make prepare-data` for the official comparison runs.
+# Smoke corpus, so this runs before TinyStories is downloaded.
+# Point the data include at configs/data/tinystories.yaml after `make prepare-data`.

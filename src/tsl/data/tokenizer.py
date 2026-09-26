@@ -1,8 +1,4 @@
-"""Tokenizer train/load utilities for a fixed-tokenizer experiment policy.
-
-Uses HuggingFace ``tokenizers`` (BPE). Train once, freeze the artifact, and
-reuse the same tokenizer across all architecture comparisons.
-"""
+"""Byte-level BPE. Train once and reuse the same artifact for every run."""
 
 from __future__ import annotations
 
@@ -30,7 +26,6 @@ EOS_TOKEN = "<eos>"
 
 
 def tokenizer_path(tokenizer_dir: str | Path) -> Path:
-    """Return the canonical path to a saved tokenizer artifact."""
     return Path(tokenizer_dir) / TOKENIZER_FILENAME
 
 
@@ -40,7 +35,6 @@ def train_tokenizer(
     vocab_size: int = 8000,
     min_frequency: int = 2,
 ) -> Tokenizer:
-    """Train a Byte-level BPE tokenizer on *texts*."""
     tokenizer = Tokenizer(BPE(unk_token=UNK_TOKEN))
     tokenizer.pre_tokenizer = ByteLevel(add_prefix_space=False)
     tokenizer.decoder = ByteLevelDecoder()
@@ -63,7 +57,6 @@ def train_tokenizer(
 
 
 def save_tokenizer(tokenizer: Tokenizer, tokenizer_dir: str | Path) -> Path:
-    """Persist tokenizer to ``tokenizer_dir/tokenizer.json``."""
     path = tokenizer_path(tokenizer_dir)
     ensure_dir(path.parent)
     tokenizer.save(str(path))
@@ -72,12 +65,11 @@ def save_tokenizer(tokenizer: Tokenizer, tokenizer_dir: str | Path) -> Path:
 
 
 def load_tokenizer(tokenizer_dir: str | Path) -> Tokenizer:
-    """Load a previously saved tokenizer artifact."""
     path = tokenizer_path(tokenizer_dir)
     if not path.is_file():
         raise FileNotFoundError(f"Tokenizer artifact not found: {path}")
     tokenizer = Tokenizer.from_file(str(path))
-    # Older smoke artifacts may lack a decoder; ByteLevel makes spaces readable.
+    # early smoke dumps were saved without a decoder
     if tokenizer.decoder is None:
         tokenizer.decoder = ByteLevelDecoder()
     logger.info("Loaded tokenizer from %s (vocab=%s)", path, tokenizer.get_vocab_size())
@@ -90,7 +82,6 @@ def encode(
     *,
     add_special_tokens: bool = True,
 ) -> list[int]:
-    """Encode a single string to token IDs."""
     encoding = tokenizer.encode(text, add_special_tokens=add_special_tokens)
     return encoding.ids
 
@@ -101,13 +92,11 @@ def encode_batch(
     *,
     add_special_tokens: bool = True,
 ) -> list[list[int]]:
-    """Encode multiple strings to token ID lists."""
     encodings = tokenizer.encode_batch(list(texts), add_special_tokens=add_special_tokens)
     return [e.ids for e in encodings]
 
 
 def decode(tokenizer: Tokenizer, ids: Sequence[int], *, skip_special_tokens: bool = True) -> str:
-    """Decode token IDs back to text."""
     return tokenizer.decode(list(ids), skip_special_tokens=skip_special_tokens)
 
 
@@ -118,7 +107,6 @@ def get_or_train_tokenizer(
     vocab_size: int = 8000,
     force_retrain: bool = False,
 ) -> Tokenizer:
-    """Load an existing tokenizer or train and save a new one."""
     path = tokenizer_path(tokenizer_dir)
     if path.is_file() and not force_retrain:
         return load_tokenizer(tokenizer_dir)

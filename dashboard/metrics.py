@@ -1,4 +1,4 @@
-"""Display formatting and derived metric helpers for the dashboard."""
+"""Number formatting for the dashboard cards."""
 
 from __future__ import annotations
 
@@ -12,7 +12,6 @@ def fmt_float(value: float | None, digits: int = 3) -> str:
 
 
 def fmt_compact(value: float | int | None) -> str:
-    """Compact number formatting (1.2K, 3.4M)."""
     if value is None:
         return "—"
     n = float(value)
@@ -74,7 +73,6 @@ def short_run_name(name: str | None) -> str:
 
 
 def interpret_selection(bundles: list[dict[str, Any]]) -> str:
-    """One-paragraph interpretation for the selected runs (HTML-safe)."""
     if not bundles:
         return "Select one or more runs in the sidebar to compare architecture tradeoffs."
     if len(bundles) == 1:

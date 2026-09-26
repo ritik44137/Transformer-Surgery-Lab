@@ -1,4 +1,4 @@
-"""Write run artifacts: config, metadata, metrics, summary."""
+"""Append metrics under runs/<name>/."""
 
 from __future__ import annotations
 
@@ -19,8 +19,6 @@ logger = get_logger(__name__)
 
 
 class RunWriter:
-    """Owns one run directory and appends metrics as JSONL."""
-
     def __init__(self, output_dir: str | Path, run_name: str) -> None:
         self.run_name = run_name
         self.run_dir = ensure_dir(Path(output_dir) / run_name)

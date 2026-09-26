@@ -1,4 +1,4 @@
-"""Optimizer factory (AdamW with light param grouping)."""
+"""AdamW. Decay on matrices, not on biases and norm scales."""
 
 from __future__ import annotations
 
@@ -16,15 +16,10 @@ def build_optimizer(
     betas: tuple[float, float] = (0.9, 0.95),
     eps: float = 1e-8,
 ) -> torch.optim.Optimizer:
-    """Build AdamW with decay applied only to 2D+ weight tensors.
-
-    Biases and LayerNorm/Embedding-style 1D parameters skip weight decay —
-    a common, explainable grouping used by nanoGPT-style trainers.
-    """
     decay: list[torch.nn.Parameter] = []
     no_decay: list[torch.nn.Parameter] = []
 
-    for name, param in model.named_parameters():
+    for _, param in model.named_parameters():
         if not param.requires_grad:
             continue
         if param.ndim >= 2:
@@ -40,7 +35,6 @@ def build_optimizer(
 
 
 def param_group_summary(optimizer: torch.optim.Optimizer) -> list[dict[str, Any]]:
-    """Return a small summary of optimizer param groups (for logging)."""
     out: list[dict[str, Any]] = []
     for i, group in enumerate(optimizer.param_groups):
         n = sum(p.numel() for p in group["params"])

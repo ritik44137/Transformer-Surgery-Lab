@@ -1,4 +1,4 @@
-"""Read experiment run artifacts for comparison tools and the dashboard."""
+"""Read a run directory back into dicts for compare_runs and the dashboard."""
 
 from __future__ import annotations
 
@@ -18,8 +18,6 @@ from tsl.utils.io import read_json, read_jsonl, read_yaml
 
 
 class RunReader:
-    """Load a single run directory into normalized structures."""
-
     def __init__(self, run_dir: str | Path) -> None:
         self.run_dir = Path(run_dir)
         if not self.run_dir.is_dir():
@@ -67,7 +65,6 @@ class RunReader:
         return self._optional_jsonl(METRICS_EVAL_FILENAME)
 
     def load_all(self) -> dict[str, Any]:
-        """Return a dashboard-friendly bundle for this run."""
         meta = self.load_metadata() or {}
         summary = self.load_summary() or {}
         benchmark = self.load_benchmark() or {}
@@ -102,17 +99,14 @@ class RunReader:
 
 
 def load_run(run_dir: str | Path) -> dict[str, Any]:
-    """Convenience wrapper around :class:`RunReader.load_all`."""
     return RunReader(run_dir).load_all()
 
 
 def load_runs(run_dirs: list[str | Path]) -> list[dict[str, Any]]:
-    """Load multiple run directories."""
     return [load_run(d) for d in run_dirs]
 
 
 def comparison_row(bundle: dict[str, Any]) -> dict[str, Any]:
-    """Flatten one run bundle into a compact comparison-table row."""
     summary = bundle.get("summary") or {}
     benchmark = bundle.get("benchmark") or {}
     meta = bundle.get("metadata") or {}

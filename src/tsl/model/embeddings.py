@@ -1,4 +1,4 @@
-"""Token embeddings and additive positional wiring."""
+"""Token lookup. Sinusoidal PE is added here; RoPE is not."""
 
 from __future__ import annotations
 
@@ -7,12 +7,6 @@ import torch.nn as nn
 
 
 class TokenEmbeddings(nn.Module):
-    """Token embedding lookup with optional additive positional encoding.
-
-    Expected input: token ids ``(batch, seq)``
-    Output: ``(batch, seq, hidden_size)``
-    """
-
     def __init__(
         self,
         vocab_size: int,
@@ -23,7 +17,7 @@ class TokenEmbeddings(nn.Module):
     ) -> None:
         super().__init__()
         self.token = nn.Embedding(vocab_size, hidden_size)
-        self.positional = positional  # None when using RoPE later
+        self.positional = positional  # None on the RoPE path
         self.dropout = nn.Dropout(dropout)
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
